@@ -8,6 +8,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LogoSvg from "../../assets/logo.svg";
 import { suscriptionService } from "../../services/suscription-service";
 import { userService } from "../../services/user-service";
+import { adminService } from "../../services/admin-service";
 import type { UserModel } from "../../types/auth-types";
 import EmailVerification from "./email-verification";
 import type { CompanySuscriptionResponse } from "../../types/suscriptions";
@@ -58,6 +59,9 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
   const [isFormDisabled, setIsFormDisabled] = useState<boolean>(false);
   const [showVerification, setShowVerification] = useState<boolean>(false);
   const [registeredEmail, setRegisteredEmail] = useState<string>("");
+  const [hasAdmin, setHasAdmin] = useState<boolean>(true);
+  const [isFirstExecution, setIsFirstExecution] = useState<boolean>(false);
+  const [createAsAdmin, setCreateAsAdmin] = useState<boolean>(false);
   const watchAllFields = watch();
 
   const [apiError, setApiError] = useState<{ field: string; message: string } | null>(null);
@@ -97,7 +101,21 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
       }
     };
 
+    const checkIfFirstExecution = async () => {
+      try {
+        const exists = await adminService.hasAdmin();
+        setHasAdmin(exists);
+        setIsFirstExecution(!exists);
+      } catch (error) {
+        console.error("Error checking admin:", error);
+        // Si hay error, asumimos que existe admin por seguridad
+        setHasAdmin(true);
+        setIsFirstExecution(false);
+      }
+    };
+
     validateUuidAndCheckSubscription();
+    checkIfFirstExecution();
   }, [companyId]);
 
   const onSubmit = async (data: UserModel & { confirmPassword?: string }): Promise<void> => {
@@ -119,6 +137,11 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
       if (whatsapp && whatsapp.trim() !== "") {
         userData.whatsapp = whatsapp;
         userData.countryCode = countryCode;
+      }
+
+      // Si es la primera ejecución y el usuario quiere crear admin, incluir el rol
+      if (isFirstExecution && createAsAdmin) {
+        userData.role = "admin";
       }
       
       const registerResult = await userService.createUser(userData);
@@ -453,6 +476,41 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
                       </motion.p>
                     )}
                   </motion.div>
+                  {isFirstExecution && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.9 }}
+                      className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <span className="text-2xl">🎉</span>
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+                            ¡Primera ejecución del sistema!
+                          </h3>
+                          <p className="text-sm text-yellow-700 dark:text-yellow-300 mb-3">
+                            Este es el primer usuario que se registra. Puedes crear este usuario como administrador del sistema.
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="createAsAdmin"
+                              checked={createAsAdmin}
+                              onCheckedChange={(checked) => setCreateAsAdmin(checked === true)}
+                            />
+                            <Label htmlFor="createAsAdmin" className="text-sm font-medium text-yellow-800 dark:text-yellow-200 cursor-pointer">
+                              Crear este usuario como Administrador
+                            </Label>
+                          </div>
+                          <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+                            ⚠️ Solo puedes crear un administrador la primera vez. Después de esto, todos los usuarios serán usuarios normales.
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
                   <div className="flex items-center space-x-2">
                     <Controller
                       name="acceptTerms"

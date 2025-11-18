@@ -13,7 +13,29 @@ export const userService = {
   },
 
   async getUser(id: string): Promise<LoginResponse> {
-    const response = await api.get<any>(`/users/${id}`);
+    const userData = await api.get<any>(`/users/${id}`);
+    console.log("userService.getUser: Respuesta completa del API:", JSON.stringify(userData, null, 2));
+    
+    // El endpoint puede retornar directamente el usuario o con estructura {user: {...}}
+    let user: any;
+    if (userData.user) {
+      // Ya viene con estructura {user: {...}, access_token: ''}
+      user = userData.user;
+      console.log("userService.getUser: Usuario extraído de userData.user:", user);
+    } else {
+      // Viene directamente el usuario
+      user = userData;
+      console.log("userService.getUser: Usuario directo:", user);
+    }
+    
+    console.log("userService.getUser: Rol del usuario:", user?.role);
+    
+    const response: LoginResponse = {
+      access_token: userData.access_token || '',
+      user: user as UserModel
+    };
+    console.log("userService.getUser: Respuesta transformada:", response);
+    console.log("userService.getUser: Rol en respuesta final:", response.user?.role);
     return response;
   },
 

@@ -1,0 +1,591 @@
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "../shared/card";
+import { Button } from "../shared/button";
+import { Input } from "../shared/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../shared/table";
+import { adminService } from "../../services/admin-service";
+import {
+  Search,
+  Edit,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  CreditCard,
+  Calendar,
+  Users,
+  Plus,
+} from "lucide-react";
+import LoadingSpinner from "../shared/spinner/loading-spinner";
+import { Alert, AlertDescription } from "../shared/alert";
+import { AlertCircle } from "lucide-react";
+import { Badge } from "../shared/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../shared/dialog";
+import { Label } from "../shared/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../shared/select";
+import { toast } from "react-hot-toast";
+
+interface Subscription {
+  _id: string;
+  type: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  btcDetails?: {
+    module?: {
+      name: string;
+    };
+  };
+  btbDetails?: {
+    maxUsers: number;
+    currentUsers: number;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface SubscriptionListResponse {
+  subscriptions: Subscription[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export default function SubscriptionManagement() {
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [params, setParams] = useState({
+    page: 1,
+    limit: 10,
+    status: "all",
+    type: "all",
+  });
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [users, setUsers] = useState<any[]>([]);
+  const [modules, setModules] = useState<any[]>([]);
+  const [formData, setFormData] = useState({
+    status: "",
+    startDate: "",
+    endDate: "",
+  });
+  const [createFormData, setCreateFormData] = useState({
+    userId: "",
+    type: "0", // B2C por defecto
+    status: "0", // Pendiente por defecto
+    startDate: "",
+    endDate: "",
+    module: "", // Para B2C
+    maxUsers: "", // Para B2B
+  });
+
+  const fetchSubscriptions = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const queryParams: any = {
+        page: params.page,
+        limit: params.limit,
+      };
+      if (params.status && params.status !== "all") queryParams.status = params.status;
+      if (params.type && params.type !== "all") queryParams.type = params.type;
+
+      const response: SubscriptionListResponse = await adminService.getSubscriptions(queryParams);
+      setSubscriptions(response.subscriptions);
+      setPagination({
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.totalPages,
+      });
+    } catch (err: any) {
+      console.error("Error fetching subscriptions:", err);
+      setError(err.message || "Error al cargar las suscripciones");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscriptions();
+  }, [params.page, params.limit, params.status, params.type]);
+
+  useEffect(() => {
+    const fetchUsersAndModules = async () => {
+      try {
+        const [usersResponse, modulesResponse] = await Promise.all([
+          adminService.getUsers({ page: 1, limit: 1000 }),
+          adminService.getModules(),
+        ]);
+        setUsers(usersResponse.users || []);
+        setModules(modulesResponse || []);
+      } catch (err) {
+        console.error("Error fetching users or modules:", err);
+      }
+    };
+    fetchUsersAndModules();
+  }, []);
+
+  const handlePageChange = (newPage: number) => {
+    setParams((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handleCreateClick = () => {
+    setCreateFormData({
+      userId: "",
+      type: "0",
+      status: "0",
+      startDate: "",
+      endDate: "",
+      module: "",
+      maxUsers: "",
+    });
+    setIsCreateDialogOpen(true);
+  };
+
+  const handleEditClick = (subscription: Subscription) => {
+    setSelectedSubscription(subscription);
+    setFormData({
+      status: subscription.status,
+      startDate: subscription.startDate ? new Date(subscription.startDate).toISOString().split('T')[0] : "",
+      endDate: subscription.endDate ? new Date(subscription.endDate).toISOString().split('T')[0] : "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveCreate = async () => {
+    try {
+      const subscriptionData: any = {
+        userId: createFormData.userId,
+        type: createFormData.type,
+        status: createFormData.status,
+        startDate: new Date(createFormData.startDate),
+        endDate: new Date(createFormData.endDate),
+      };
+
+      if (createFormData.type === "0") {
+        // B2C
+        if (!createFormData.module) {
+          toast.error("Debe seleccionar un módulo para suscripciones B2C");
+          return;
+        }
+        subscriptionData.btcDetails = {
+          module: createFormData.module,
+        };
+      } else {
+        // B2B
+        if (!createFormData.maxUsers) {
+          toast.error("Debe especificar el número máximo de usuarios para suscripciones B2B");
+          return;
+        }
+        subscriptionData.btbDetails = {
+          maxUsers: parseInt(createFormData.maxUsers, 10),
+          currentUsers: 0,
+        };
+      }
+
+      await adminService.createSubscription(subscriptionData);
+      toast.success("Suscripción creada exitosamente");
+      setIsCreateDialogOpen(false);
+      fetchSubscriptions();
+    } catch (err: any) {
+      toast.error(err.message || "Error al crear la suscripción");
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedSubscription) return;
+
+    try {
+      const updateData: any = {
+        status: formData.status,
+      };
+
+      if (formData.startDate) {
+        updateData.startDate = new Date(formData.startDate);
+      }
+
+      if (formData.endDate) {
+        updateData.endDate = new Date(formData.endDate);
+      }
+
+      await adminService.updateSubscription(selectedSubscription._id, updateData);
+      toast.success("Suscripción actualizada exitosamente");
+      setIsEditDialogOpen(false);
+      fetchSubscriptions();
+    } catch (err: any) {
+      toast.error(err.message || "Error al actualizar la suscripción");
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "1":
+        return <Badge className="bg-green-500">Activa</Badge>;
+      case "0":
+        return <Badge className="bg-yellow-500">Pendiente</Badge>;
+      case "2":
+        return <Badge variant="destructive">Cancelada</Badge>;
+      case "3":
+        return <Badge variant="outline">Expirada</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case "0":
+        return <Badge className="bg-blue-500">B2C</Badge>;
+      case "1":
+        return <Badge className="bg-purple-500">B2B</Badge>;
+      default:
+        return <Badge>{type}</Badge>;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="p-6 space-y-6"
+    >
+      <h1 className="text-3xl font-bold text-gray-800">Gestión de Suscripciones</h1>
+
+      <Card className="shadow-lg">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Lista de Suscripciones</CardTitle>
+          <div className="flex space-x-2">
+            <Button onClick={handleCreateClick} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="mr-2 h-4 w-4" /> Crear Suscripción
+            </Button>
+            <Button onClick={fetchSubscriptions} variant="outline">
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2 mb-4">
+            <Select
+              value={params.status}
+              onValueChange={(value) => setParams({ ...params, page: 1, status: value })}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los estados</SelectItem>
+                <SelectItem value="1">Activa</SelectItem>
+                <SelectItem value="0">Pendiente</SelectItem>
+                <SelectItem value="2">Cancelada</SelectItem>
+                <SelectItem value="3">Expirada</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={params.type}
+              onValueChange={(value) => setParams({ ...params, page: 1, type: value })}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filtrar por tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los tipos</SelectItem>
+                <SelectItem value="0">B2C</SelectItem>
+                <SelectItem value="1">B2B</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {loading ? (
+            <LoadingSpinner />
+          ) : error ? (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Tipo</TableHead>
+                    <TableHead>Estado</TableHead>
+                    <TableHead>Módulo</TableHead>
+                    <TableHead>Fecha Inicio</TableHead>
+                    <TableHead>Fecha Fin</TableHead>
+                    <TableHead className="text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {subscriptions.map((subscription) => (
+                    <TableRow key={subscription._id}>
+                      <TableCell className="font-mono text-xs">
+                        {subscription._id.substring(0, 8)}...
+                      </TableCell>
+                      <TableCell>{getTypeBadge(subscription.type)}</TableCell>
+                      <TableCell>{getStatusBadge(subscription.status)}</TableCell>
+                      <TableCell>
+                        {subscription.btcDetails?.module?.name || 
+                         (subscription.btbDetails ? `B2B (${subscription.btbDetails.currentUsers}/${subscription.btbDetails.maxUsers} usuarios)` : "N/A")}
+                      </TableCell>
+                      <TableCell>{formatDate(subscription.startDate)}</TableCell>
+                      <TableCell>{formatDate(subscription.endDate)}</TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEditClick(subscription)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="flex items-center justify-between mt-4">
+                <Button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page === 1}
+                  variant="outline"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-2" /> Anterior
+                </Button>
+                <span className="text-sm text-gray-700">
+                  Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
+                </span>
+                <Button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page === pagination.totalPages}
+                  variant="outline"
+                >
+                  Siguiente <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Subscription Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Suscripción</DialogTitle>
+            <DialogDescription>
+              Realiza cambios en la información de la suscripción.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="status">Estado</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Pendiente</SelectItem>
+                  <SelectItem value="1">Activa</SelectItem>
+                  <SelectItem value="2">Cancelada</SelectItem>
+                  <SelectItem value="3">Expirada</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="startDate">Fecha de Inicio</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="endDate">Fecha de Fin</Label>
+              <Input
+                id="endDate"
+                type="date"
+                value={formData.endDate}
+                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveEdit}>Guardar Cambios</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Subscription Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Crear Nueva Suscripción</DialogTitle>
+            <DialogDescription>
+              Crea una nueva suscripción para un usuario.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="userId">Usuario</Label>
+              <Select
+                value={createFormData.userId}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, userId: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccionar usuario" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.firstName} {user.lastName} ({user.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="type">Tipo de Suscripción</Label>
+              <Select
+                value={createFormData.type}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, type: value, module: "", maxUsers: "" })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">B2C</SelectItem>
+                  <SelectItem value="1">B2B</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">Estado</Label>
+              <Select
+                value={createFormData.status}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, status: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">Pendiente</SelectItem>
+                  <SelectItem value="1">Activa</SelectItem>
+                  <SelectItem value="2">Cancelada</SelectItem>
+                  <SelectItem value="3">Expirada</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {createFormData.type === "0" && (
+              <div className="space-y-2">
+                <Label htmlFor="module">Módulo (B2C)</Label>
+                <Select
+                  value={createFormData.module}
+                  onValueChange={(value) => setCreateFormData({ ...createFormData, module: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar módulo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modules.map((module) => (
+                      <SelectItem key={module._id} value={module._id}>
+                        {module.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {createFormData.type === "1" && (
+              <div className="space-y-2">
+                <Label htmlFor="maxUsers">Máximo de Usuarios (B2B)</Label>
+                <Input
+                  id="maxUsers"
+                  type="number"
+                  min="1"
+                  value={createFormData.maxUsers}
+                  onChange={(e) => setCreateFormData({ ...createFormData, maxUsers: e.target.value })}
+                  placeholder="Ej: 10"
+                />
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="createStartDate">Fecha de Inicio</Label>
+              <Input
+                id="createStartDate"
+                type="date"
+                value={createFormData.startDate}
+                onChange={(e) => setCreateFormData({ ...createFormData, startDate: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="createEndDate">Fecha de Fin</Label>
+              <Input
+                id="createEndDate"
+                type="date"
+                value={createFormData.endDate}
+                onChange={(e) => setCreateFormData({ ...createFormData, endDate: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveCreate}>Crear Suscripción</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
+  );
+}
+

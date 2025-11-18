@@ -26,10 +26,12 @@ import {
   BookOpen,
   LineChart,
   FileText,
+  Shield,
   type LucideIcon,
 } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserRole } from "../../types/admin-types";
 import LogoSvg from "../../assets/logo.svg";
 import { getUserId, getUserInfo, isAuthenticated, logout } from "../../services/auth-service";
 import { suscriptionService } from "../../services/suscription-service";
@@ -253,6 +255,33 @@ export default function MainLayout() {
     };
   }, []);
 
+  // Verificar si el usuario es admin o editor
+  const isAdminOrEditor = useMemo(() => {
+    if (!user?.role) return false;
+    const userRole = user.role as UserRole;
+    const roleString = String(userRole || '').toLowerCase();
+    
+    // Comparar con enum y también con strings para mayor compatibilidad
+    const isAdmin = 
+      userRole === UserRole.ADMIN || 
+      roleString === 'admin';
+    const isEditor = 
+      userRole === UserRole.EDITOR || 
+      roleString === 'editor';
+    
+    console.log("MainLayout: Verificando rol del usuario:", {
+      userRole,
+      roleString,
+      UserRoleADMIN: UserRole.ADMIN,
+      UserRoleEDITOR: UserRole.EDITOR,
+      isAdmin,
+      isEditor,
+      result: isAdmin || isEditor
+    });
+    
+    return isAdmin || isEditor;
+  }, [user?.role]);
+
   // Memoización del menú de usuario
   const UserMenu = useMemo(
     () => (
@@ -272,6 +301,18 @@ export default function MainLayout() {
             <User className="mr-2 h-4 w-4" />
             <span>Mi cuenta</span>
           </DropdownMenuItem>
+          {isAdminOrEditor && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => navigate("/admin")}
+                className="cursor-pointer"
+              >
+                <Shield className="mr-2 h-4 w-4" />
+                <span>Panel de Administración</span>
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
             <LogOut className="mr-2 h-4 w-4" />
@@ -280,7 +321,7 @@ export default function MainLayout() {
         </DropdownMenuContent>
       </DropdownMenu>
     ),
-    [handleLogout]
+    [handleLogout, isAdminOrEditor, navigate]
   );
 
   // Memoización del contenido principal

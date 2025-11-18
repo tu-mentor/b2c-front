@@ -32,6 +32,10 @@ const RegisterForm = lazyLoad(() => import("./components/form/register-form"), t
 // Componente principal con carga diferida
 const Home = lazyLoad(() => import("./components/form/main-layout"), true);
 
+// Componente de administración
+const AdminLayout = lazyLoad(() => import("./components/admin/AdminLayout"));
+const AdminRoute = lazyLoad(() => import("./components/admin/AdminRoute"));
+
 // Memoizar el componente de fallback para evitar re-renders
 const LoadingFallback = memo(() => <LoadingSpinner />);
 
@@ -111,6 +115,16 @@ export default function App() {
         element={
           <Suspense fallback={<LoadingFallback />}>
             <Home />
+          </Suspense>
+        } 
+      />
+      <Route 
+        path="/admin" 
+        element={
+          <Suspense fallback={<LoadingFallback />}>
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
           </Suspense>
         } 
       />

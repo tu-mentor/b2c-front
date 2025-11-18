@@ -14,6 +14,7 @@ export interface UserModel {
   acceptTerms: boolean;
   showAlertMessage: boolean;
   status: string;
+  role?: string;
   companyId?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -27,5 +28,5 @@ export interface CompanyCharacteristic {
 
 export interface LoginResponse {
   access_token: string;
-  user: UserModel;
+  user: UserModel & { role?: string };
 }

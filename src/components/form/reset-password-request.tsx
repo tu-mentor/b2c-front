@@ -13,8 +13,7 @@ type PasswordResetFormProps = {
 }
 
 type PasswordResetFormData = {
-  whatsapp: string
-  childName: string
+  email: string
 }
 
 export default function PasswordResetForm({ onFlip }: PasswordResetFormProps) {
@@ -31,7 +30,7 @@ export default function PasswordResetForm({ onFlip }: PasswordResetFormProps) {
     setIsLoading(true)
     setError(null)
     try {
-      await requestPasswordReset(data.whatsapp, data.childName)
+      await requestPasswordReset(data.email)
       setResetSent(true)
     } catch (err: any) {
       setError(err instanceof Error ? err.message : err.message)
@@ -61,30 +60,21 @@ export default function PasswordResetForm({ onFlip }: PasswordResetFormProps) {
             {!resetSent ? (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
-                  <Label htmlFor="whatsapp">Número de Whatsapp registrado</Label>
+                  <Label htmlFor="email">Correo electrónico registrado</Label>
                   <Input
-                    id="whatsapp"
-                    type="tel"
-                    placeholder="Ingrese su número de Whatsapp"
-                    {...register("whatsapp", {
-                      required: "El número de Whatsapp es requerido",
+                    id="email"
+                    type="email"
+                    placeholder="Ingrese su correo electrónico"
+                    {...register("email", {
+                      required: "El correo electrónico es requerido",
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: "Correo electrónico inválido",
+                      },
                     })}
-                    className={errors.whatsapp ? "border-red-500" : ""}
+                    className={errors.email ? "border-red-500" : ""}
                   />
-                  {errors.whatsapp && <p className="text-red-500 text-sm mt-1">{errors.whatsapp.message}</p>}
-                </div>
-                <div>
-                  <Label htmlFor="childName">Tu nombre registrado en la plataforma</Label>
-                  <Input
-                    id="childName"
-                    type="text"
-                    placeholder="Ingrese tu nombre"
-                    {...register("childName", {
-                      required: "Tu nombre es requerido",
-                    })}
-                    className={errors.childName ? "border-red-500" : ""}
-                  />
-                  {errors.childName && <p className="text-red-500 text-sm mt-1">{errors.childName.message}</p>}
+                  {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Enviando..." : "Enviar Enlace de Restablecimiento"}
@@ -98,7 +88,10 @@ export default function PasswordResetForm({ onFlip }: PasswordResetFormProps) {
                 className="text-center"
               >
                 <p className="text-green-600 mb-4">
-                  ¡Enlace de restablecimiento enviado! Por favor, revise su WhatsApp.
+                  ¡Enlace de restablecimiento enviado! Por favor, revise su correo electrónico.
+                </p>
+                <p className="text-sm text-gray-600">
+                  Si no encuentras el correo, revisa tu carpeta de spam.
                 </p>
               </motion.div>
             )}

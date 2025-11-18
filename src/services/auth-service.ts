@@ -3,9 +3,10 @@ import { LoginCredentials, LoginResponse, UserModel } from "../types/auth-types"
 import api from "./api";
 import { userService } from "./user-service";
 
-export async function requestPasswordReset(whatsapp: string, childName: string): Promise<void> {
+export async function requestPasswordReset(email: string): Promise<{ message: string }> {
   try {
-    await api.post("/auth/reset-password-request", { whatsapp, childName });
+    const response = await api.post<{ message: string }>("/auth/reset-password-request", { email });
+    return response;
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data?.message || "An error occurred while requesting password reset";

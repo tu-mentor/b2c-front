@@ -191,13 +191,13 @@ export default function InstructionsVocationalTest({ totalChildren }: Vocational
               <h3 className="text-xl font-bold mb-2 text-blue-800 dark:text-blue-200">
                 ¡Cada paso tiene un video tutorial!
               </h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <div className="text-gray-700 dark:text-gray-300">
                 Busca los botones{" "}
                 <Badge className="inline-flex items-center mx-1 px-3 py-1 bg-blue-500 text-white text-sm rounded-full">
                   <Play className="h-3 w-3 mr-1" /> Ver video
                 </Badge>{" "}
                 para ver instrucciones detalladas de cada paso.
-              </p>
+              </div>
             </div>
           </CardContent>
         </Card>
