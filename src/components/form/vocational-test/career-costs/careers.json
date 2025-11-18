@@ -1,0 +1,1306 @@
+{
+  "careers": [
+    {
+      "name": "Administración de Empresas",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Virtual",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2799360
+        },
+        {
+          "name": "Uniminuto",
+          "modality": "A Distancia",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2900100
+        },
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3419702
+        },
+        {
+          "name": "Antonio Nariño",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3785000
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 3965000
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 4151994
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Virtual",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5054000
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5682000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8529000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 9159000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9593000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 11951000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14740000
+        }
+      ]
+    },
+    {
+      "name": "Arquitectura",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9091000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 9813000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 11082000
+        }
+      ]
+    },
+    {
+      "name": "Comunicación Social",
+      "universities": [
+        {
+          "name": "Uniminuto",
+          "modality": "A Distancia",
+          "totalPeriods": 10,
+          "firstSemesterValue": 2393200
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4368000
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5072432
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9635000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 11451000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12430000
+        }
+      ]
+    },
+    {
+      "name": "Contaduría Pública",
+      "universities": [
+        {
+          "name": "Uniminuto",
+          "modality": "A Distancia",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2459200
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Virtual",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2619540
+        },
+        {
+          "name": "Uniminuto",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2687700
+        },
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3526985
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 4148252
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4300400
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4628000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Virtual",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5054000
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5148000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5249000
+        }
+      ]
+    },
+    {
+      "name": "Derecho",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Virtual",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4127004
+        },
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 4365215
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4467845
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5901000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 8018000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8490000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 12983000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 14070000
+        }
+      ]
+    },
+    {
+      "name": "Economía",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 3057072
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5182000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 6575000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial - Diurno",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12473000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14740000
+        }
+      ]
+    },
+    {
+      "name": "Finanzas y Negocios Internacionales",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 4783379
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 6704000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial - Diurno",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12717000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14740000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Electrónica",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 3937808
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5681000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9004000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial - Flexible",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9091000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial - Diurno",
+          "totalPeriods": 9,
+          "firstSemesterValue": 12462000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Industrial",
+      "universities": [
+        {
+          "name": "Uniminuto",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 2974500
+        },
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 4156592
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5681000
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5727623
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 6365000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9004000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9091000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 12462000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 14740000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería de Sistemas",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Virtual",
+          "totalPeriods": 10,
+          "firstSemesterValue": 3055956
+        },
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Híbrida",
+          "totalPeriods": 9,
+          "firstSemesterValue": 4284891
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4953000
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5298134
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 6336000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9004000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9091000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial - Diurno",
+          "totalPeriods": 9,
+          "firstSemesterValue": 12462000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 14470000
+        }
+      ]
+    },
+    {
+      "name": "Medicina",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 12,
+          "firstSemesterValue": 15089383
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 12,
+          "firstSemesterValue": 20562000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 12,
+          "firstSemesterValue": 23537000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 12,
+          "firstSemesterValue": 25410000
+        }
+      ]
+    },
+    {
+      "name": "Mercadeo",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3485527
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Virtual",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5054000
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 5194000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8529000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8948000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14740000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial - Diurno",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14892000
+        }
+      ]
+    },
+    {
+      "name": "Psicología",
+      "universities": [
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 4113505
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 5446743
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 7197000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 8310000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 11199000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 12310000
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Ciencias Sociales",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 1834683
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2500000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 10370000
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Matemáticas",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2228062
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Ciencias Naturales",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2228062
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Educación Infantil",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2417336
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "A Distancia",
+          "totalPeriods": 10,
+          "firstSemesterValue": 2652000
+        },
+        {
+          "name": "Uniminuto",
+          "modality": "A Distancia",
+          "totalPeriods": 9,
+          "firstSemesterValue": 3161800
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 5103000
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Educación Artística",
+      "universities": [
+        {
+          "name": "Uniminuto",
+          "modality": "A Distancia",
+          "totalPeriods": 9,
+          "firstSemesterValue": 2459200
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Educación Física y Deporte",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 2514382
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Ciencias del Deporte y la Educación Física",
+      "universities": [
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Virtual",
+          "totalPeriods": 10,
+          "firstSemesterValue": 2652000
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Lenguas Extranjeras",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 3084692
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 10370000
+        }
+      ]
+    },
+    {
+      "name": "Publicidad",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3736046
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Literatura y Lengua Castellana",
+      "universities": [
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3863000
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura en Educación Física",
+      "universities": [
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 4027000
+        }
+      ]
+    },
+    {
+      "name": "Administración Financiera",
+      "universities": [
+        {
+          "name": "Uniminuto",
+          "modality": "A Distancia",
+          "totalPeriods": 10,
+          "firstSemesterValue": 1871800
+        }
+      ]
+    },
+    {
+      "name": "Trabajo Social",
+      "universities": [
+        {
+          "name": "Uniminuto",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 2483000
+        },
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 3130947
+        },
+        {
+          "name": "Antonio José Camacho",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 3965000
+        }
+      ]
+    },
+    {
+      "name": "Química",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 2980314
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12200000
+        }
+      ]
+    },
+    {
+      "name": "Microbiología",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 3093559
+        }
+      ]
+    },
+    {
+      "name": "Comercio Internacional",
+      "universities": [
+        {
+          "name": "Antonio Nariño",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 3785000
+        },
+        {
+          "name": "Cooperativa de Colombia",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 4690713
+        }
+      ]
+    },
+    {
+      "name": "Química Farmacéutica",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5717611
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 13420000
+        }
+      ]
+    },
+    {
+      "name": "Medicina Veterinaria",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 6254984
+        }
+      ]
+    },
+    {
+      "name": "Fisioterapia",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 6311676
+        }
+      ]
+    },
+    {
+      "name": "Enfermeria",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 6799697
+        },
+        {
+          "name": "Libre",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 8310000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9262000
+        }
+      ]
+    },
+    {
+      "name": "Filosofía",
+      "universities": [
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 6993000
+        }
+      ]
+    },
+    {
+      "name": "Odontología",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 8436585
+        }
+      ]
+    },
+    {
+      "name": "Publicidad en Medios Digitales",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9091000
+        }
+      ]
+    },
+    {
+      "name": "Diseño Gráfico",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9091000
+        }
+      ]
+    },
+    {
+      "name": "Diseño Industrial",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9635000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14740000
+        }
+      ]
+    },
+    {
+      "name": "Nutrición y Dietética",
+      "universities": [
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9638000
+        }
+      ]
+    },
+    {
+      "name": "Cine",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9806000
+        }
+      ]
+    },
+    {
+      "name": "Biología",
+      "universities": [
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 10659000
+        },
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12200000
+        }
+      ]
+    },
+    {
+      "name": "Artes Visuales",
+      "universities": [
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 10722000
+        }
+      ]
+    },
+    {
+      "name": "Antropología",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 11180000
+        }
+      ]
+    },
+    {
+      "name": "Bacteriología y Laboratorio Clínico",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 11180000
+        }
+      ]
+    },
+    {
+      "name": "Sociología",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 11180000
+        }
+      ]
+    },
+    {
+      "name": "Diseño de Comunicación Visual",
+      "universities": [
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12060000
+        }
+      ]
+    },
+    {
+      "name": "Diseño de Medios Interactivos",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14070000
+        }
+      ]
+    },
+    {
+      "name": "Música",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 14070000
+        }
+      ]
+    },
+    {
+      "name": "Negocios Internacionales",
+      "universities": [
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14892000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Comercial",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 3587395
+        }
+      ]
+    },
+    {
+      "name": "BioIngeniería",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4144863
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería en Energías",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4639608
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Civil",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 4862675
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 12462000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Química",
+      "universities": [
+        {
+          "name": "Santiago de Cali",
+          "modality": "Presencial",
+          "totalPeriods": 10,
+          "firstSemesterValue": 5005800
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería de Datos e Inteligencia Artificial",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Combinada",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8490000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería de Manufactura",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Combinada",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8490000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Eléctrica",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 8490000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Empresarial",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Combinada",
+          "totalPeriods": 8,
+          "firstSemesterValue": 8490000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Mecánica",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 8490000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 12462000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Ambiental",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9263000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Multimedia",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Combinada",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9263000
+        },
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9330000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Biomédica",
+      "universities": [
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9322000
+        },
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9635000
+        },
+        {
+          "name": "Javeriana",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 12986000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Mecatrónica",
+      "universities": [
+        {
+          "name": "Autónoma de Occidente",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 9635000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Agroindustrial",
+      "universities": [
+        {
+          "name": "San Buenaventura",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 9842000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería Bioquímica",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 9,
+          "firstSemesterValue": 14070000
+        }
+      ]
+    },
+    {
+      "name": "Ingeniería en Energía Inteligente",
+      "universities": [
+        {
+          "name": "Icesi",
+          "modality": "Presencial",
+          "totalPeriods": 8,
+          "firstSemesterValue": 14070000
+        }
+      ]
+    }
+  ]
+}

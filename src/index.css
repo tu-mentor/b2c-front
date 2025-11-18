@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Asap:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #FFFFFF;
+    --foreground: #5c5c5c;
+    --muted: #E6E8ED;
+    --muted-foreground: #6B7280;
+    --popover: #FFFFFF;
+    --popover-foreground: #2A2E37;
+    --card: #FFFFFF;
+    --card-foreground: #2A2E37;
+    --border: #e5e6e9;
+    --input: #C7CCD6;
+    --primary: #03ADE8;
+    --primary-foreground: #FFFFFF;
+    --secondary: #66B3CC;
+    --secondary-foreground: #2A2E37;
+    --accent: #FD4543;
+    --accent-foreground: #FFFFFF;
+    --destructive: #CC0000;
+    --destructive-foreground: #FFFFFF;
+    --ring: #1A56DB;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #151A24;
+    --foreground: #F0F1F3;
+    --muted: #2A2E37;
+    --muted-foreground: #fcfcfc;
+    --popover: #1F2937;
+    --popover-foreground: #F0F1F3;
+    --card: #1F2937;
+    --card-foreground: #F0F1F3;
+    --border: #3E4655;
+    --input: #3E4655;
+    --primary: #3B82F6;
+    --primary-foreground: #151A24;
+    --secondary: #00B3F0;
+    --secondary-foreground: #151A24;
+    --accent: #CC33FF;
+    --accent-foreground: #151A24;
+    --destructive: #FF0000;
+    --destructive-foreground: #151A24;
+    --ring: #3B82F6;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-asap;
+  }
+}

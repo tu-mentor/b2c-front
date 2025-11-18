@@ -1,0 +1,1007 @@
+[
+  {
+    "year": 2020,
+    "fields": [
+      {
+        "name": "Educación",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 456
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1088
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1152
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 553
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 53
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 4
+          },
+          {
+            "range": "Más de 9",
+            "total": 3
+          }
+        ]
+      },
+      {
+        "name": "Arte y Humanidades",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 253
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 572
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 462
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 233
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 52
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 16
+          },
+          {
+            "range": "Más de 9",
+            "total": 8
+          }
+        ]
+      },
+      {
+        "name": "Ciencias Sociales, Periodismo e Información",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 457
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1133
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1066
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 724
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 203
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 44
+          },
+          {
+            "range": "Más de 9",
+            "total": 27
+          }
+        ]
+      },
+      {
+        "name": "Administración de Empresas y Derecho",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 1607
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 5269
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 5296
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 3909
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 1389
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 527
+          },
+          {
+            "range": "Más de 9",
+            "total": 171
+          }
+        ]
+      },
+      {
+        "name": "Ciencias Naturales, Matemáticas y Estadística",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 96
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 173
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 197
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 227
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 89
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 19
+          },
+          {
+            "range": "Más de 9",
+            "total": 2
+          }
+        ]
+      },
+      {
+        "name": "Tecnologías de la Información y la Comunicación (TIC)",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 36
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 103
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 235
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 359
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 180
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 46
+          },
+          {
+            "range": "Más de 9",
+            "total": 11
+          }
+        ]
+      },
+      {
+        "name": "Ingeniería, Industria y Construcción",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 1037
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 2847
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 3037
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 2051
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 737
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 205
+          },
+          {
+            "range": "Más de 9",
+            "total": 62
+          }
+        ]
+      },
+      {
+        "name": "Agropecuario, Silvicultura, Pesca y Veterinaria",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 97
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 180
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 214
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 124
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 24
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 4
+          },
+          {
+            "range": "Más de 9",
+            "total": 1
+          }
+        ]
+      },
+      {
+        "name": "Salud y Bienestar",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 457
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1088
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1152
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 1553
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 553
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 104
+          },
+          {
+            "range": "Más de 9",
+            "total": 13
+          }
+        ]
+      },
+      {
+        "name": "Servicios",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 31
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 96
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 72
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 11
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 0
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 0
+          },
+          {
+            "range": "Más de 9",
+            "total": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": 2021,
+    "fields": [
+      {
+        "name": "Educación",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 461
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1108
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1226
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 470
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 53
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 9
+          },
+          {
+            "range": "Más de 9",
+            "total": 5
+          }
+        ]
+      },
+      {
+        "name": "Arte y Humanidades",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 223
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 534
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 526
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 265
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 66
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 20
+          },
+          {
+            "range": "Más de 9",
+            "total": 3
+          }
+        ]
+      },
+      {
+        "name": "Ciencias Sociales, Periodismo e Información",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 483
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1154
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1254
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 837
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 241
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 63
+          },
+          {
+            "range": "Más de 9",
+            "total": 21
+          }
+        ]
+      },
+      {
+        "name": "Administración de Empresas y Derecho",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 1500
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 4718
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 5736
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 3903
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 1487
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 394
+          },
+          {
+            "range": "Más de 9",
+            "total": 179
+          }
+        ]
+      },
+      {
+        "name": "Ciencias Naturales, Matemáticas y Estadística",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 83
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 214
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 213
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 210
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 99
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 11
+          },
+          {
+            "range": "Más de 9",
+            "total": 4
+          }
+        ]
+      },
+      {
+        "name": "Tecnologías de la Información y la Comunicación (TIC)",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 26
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 89
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 214
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 321
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 201
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 55
+          },
+          {
+            "range": "Más de 9",
+            "total": 15
+          }
+        ]
+      },
+      {
+        "name": "Ingeniería, Industria y Construcción",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 1037
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 2524
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 3321
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 2051
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 737
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 205
+          },
+          {
+            "range": "Más de 9",
+            "total": 62
+          }
+        ]
+      },
+      {
+        "name": "Agropecuario, Silvicultura, Pesca y Veterinaria",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 97
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 180
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 214
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 124
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 24
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 4
+          },
+          {
+            "range": "Más de 9",
+            "total": 1
+          }
+        ]
+      },
+      {
+        "name": "Salud y Bienestar",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 461
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1108
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1226
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 1470
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 553
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 109
+          },
+          {
+            "range": "Más de 9",
+            "total": 15
+          }
+        ]
+      },
+      {
+        "name": "Servicios",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 33
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 92
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 88
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 16
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 5
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 0
+          },
+          {
+            "range": "Más de 9",
+            "total": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "year": 2022,
+    "fields": [
+      {
+        "name": "Educación",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 510
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1230
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1246
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 662
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 74
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 9
+          },
+          {
+            "range": "Más de 9",
+            "total": 2
+          }
+        ]
+      },
+      {
+        "name": "Arte y Humanidades",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 296
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 565
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 635
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 361
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 82
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 26
+          },
+          {
+            "range": "Más de 9",
+            "total": 14
+          }
+        ]
+      },
+      {
+        "name": "Ciencias Sociales, Periodismo e Información",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 635
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1323
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1611
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 1191
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 326
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 110
+          },
+          {
+            "range": "Más de 9",
+            "total": 38
+          }
+        ]
+      },
+      {
+        "name": "Administración de Empresas y Derecho",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 1838
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 5810
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 6789
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 4834
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 1852
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 540
+          },
+          {
+            "range": "Más de 9",
+            "total": 248
+          }
+        ]
+      },
+      {
+        "name": "Ciencias Naturales, Matemáticas y Estadística",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 100
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 201
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 240
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 284
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 119
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 19
+          },
+          {
+            "range": "Más de 9",
+            "total": 4
+          }
+        ]
+      },
+      {
+        "name": "Tecnologías de la Información y la Comunicación (TIC)",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 25
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 89
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 235
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 359
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 235
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 76
+          },
+          {
+            "range": "Más de 9",
+            "total": 24
+          }
+        ]
+      },
+      {
+        "name": "Ingeniería, Industria y Construcción",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 1243
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 3037
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 3847
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 2551
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 937
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 265
+          },
+          {
+            "range": "Más de 9",
+            "total": 89
+          }
+        ]
+      },
+      {
+        "name": "Agropecuario, Silvicultura, Pesca y Veterinaria",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 108
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 234
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 252
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 124
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 24
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 4
+          },
+          {
+            "range": "Más de 9",
+            "total": 1
+          }
+        ]
+      },
+      {
+        "name": "Salud y Bienestar",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 510
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 1230
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 1246
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 1662
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 574
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 109
+          },
+          {
+            "range": "Más de 9",
+            "total": 12
+          }
+        ]
+      },
+      {
+        "name": "Servicios",
+        "salaryRanges": [
+          {
+            "range": "1",
+            "total": 25
+          },
+          {
+            "range": "Entre 1 y 1,5",
+            "total": 108
+          },
+          {
+            "range": "Entre 1,5 y 2,5",
+            "total": 89
+          },
+          {
+            "range": "Entre 2,5 y 4",
+            "total": 26
+          },
+          {
+            "range": "Entre 4 y 6",
+            "total": 1
+          },
+          {
+            "range": "Entre 6 y 9",
+            "total": 1
+          },
+          {
+            "range": "Más de 9",
+            "total": 0
+          }
+        ]
+      }
+    ]
+  }
+]

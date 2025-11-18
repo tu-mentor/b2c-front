@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tu-Mentor.com</title>
+    <!-- Spinner inicial inline con diseño mejorado -->
+    <style>
+      #root:empty + .initial-loading {
+        display: flex;
+      }
+      
+      .initial-loading {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        width: 100vw;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        z-index: 99999;
+        animation: hideSpinner 10s forwards;
+      }
+
+      @keyframes hideSpinner {
+        0%, 95% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          visibility: hidden;
+        }
+      }
+
+      .initial-logo-container {
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .initial-logo {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        color: #1e293b;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 0.6s ease forwards;
+      }
+
+      .initial-tagline {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 14px;
+        color: #64748b;
+        letter-spacing: -0.2px;
+        opacity: 0;
+        transform: translateY(10px);
+        animation: fadeInUp 0.6s ease forwards 0.2s;
+      }
+
+      .initial-spinner-container {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        animation: fadeIn 0.3s ease forwards 0.4s;
+      }
+
+      .initial-spinner {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+
+      .initial-spinner-outer {
+        border: 3px solid transparent;
+        border-top-color: #3b82f6;
+        animation: spin 1s linear infinite;
+      }
+
+      .initial-spinner-middle {
+        border: 3px solid transparent;
+        border-top-color: #60a5fa;
+        animation: spin 1.5s linear infinite reverse;
+        scale: 0.85;
+      }
+
+      .initial-spinner-inner {
+        border: 3px solid transparent;
+        border-top-color: #93c5fd;
+        animation: spin 2s linear infinite;
+        scale: 0.7;
+      }
+
+      .initial-text {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 500;
+        opacity: 0;
+        animation: fadeIn 0.3s ease forwards 0.6s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .initial-text::after {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background-color: currentColor;
+        border-radius: 50%;
+        animation: dots 1.5s infinite;
+      }
+
+      .initial-progress {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        width: 0%;
+        animation: progress 2s ease-in-out forwards;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes dots {
+        0%, 20% {
+          opacity: 0;
+          transform: scale(0);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        80%, 100% {
+          opacity: 0;
+          transform: scale(0);
+        }
+      }
+
+      @keyframes progress {
+        0% {
+          width: 0%;
+        }
+        50% {
+          width: 70%;
+        }
+        100% {
+          width: 100%;
+        }
+      }
+
+      /* Modo oscuro */
+      @media (prefers-color-scheme: dark) {
+        .initial-loading {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        .initial-logo {
+          color: #f8fafc;
+        }
+        
+        .initial-tagline {
+          color: #94a3b8;
+        }
+        
+        .initial-text {
+          color: #cbd5e1;
+        }
+
+        .initial-spinner-outer {
+          border-top-color: #3b82f6;
+        }
+
+        .initial-spinner-middle {
+          border-top-color: #60a5fa;
+        }
+
+        .initial-spinner-inner {
+          border-top-color: #93c5fd;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Spinner inicial mejorado -->
+    <div class="initial-loading">
+      <div class="initial-logo-container">
+        <div class="initial-logo">Tu-Mentor.com</div>
+      </div>
+      <div class="initial-spinner-container">
+        <div class="initial-spinner initial-spinner-outer"></div>
+        <div class="initial-spinner initial-spinner-middle"></div>
+        <div class="initial-spinner initial-spinner-inner"></div>
+      </div>
+      <div class="initial-text">Preparando tu experiencia</div>
+      <div class="initial-progress"></div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
