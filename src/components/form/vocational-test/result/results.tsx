@@ -21,13 +21,13 @@ import { Radar } from "react-chartjs-2";
 import { getUserId, getUserInfo } from "../../../../services/auth-service";
 import { vocationalService } from "../../../../services/vocational-service";
 import { resultService } from "../../../../services/vocational-test/result-service";
-import type { ChildModel, CompanyCharacteristic } from "../../../../types/auth-types";
-import type { ChildSubscription } from "../../../../types/suscriptions";
+import type { CompanyCharacteristic } from "../../../../types/auth-types";
+import type { Subscription } from "../../../../types/suscriptions";
 import { Alert, AlertDescription, AlertTitle } from "../../../shared/alert";
 import { Avatar, AvatarFallback } from "../../../shared/avatar";
 import { Badge } from "../../../shared/badge";
 import { Button } from "../../../shared/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../shared/card";
 import {
   Dialog,
   DialogContent,
@@ -40,7 +40,6 @@ import { Input } from "../../../shared/input";
 import { LoadingCard } from "../../../shared/loading/loading-card";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../shared/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../shared/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../shared/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../shared/tooltip";
 import ProjectKit from "../../project-kit/project-kit";
@@ -51,8 +50,8 @@ import { questions as hollandQuestions } from "../holland/holland-data";
 import SalaryDataVisualization from "../salary-employment-dashboard/SalaryDataVisualization";
 import type {
   ChasideScores,
-  ChildResult,
-  ChildRowProps,
+  UserResult,
+  UserRowProps,
   HollandScores,
   TestResultsProps,
 } from "../types/results-types";
@@ -108,7 +107,7 @@ const TestResults: React.FC<TestResultsProps> = ({ hollandResult, chasideResult 
         },
         pointLabels: {
           font: {
-            size: 10,
+            size: 9,
           },
         },
       },
@@ -137,7 +136,7 @@ const TestResults: React.FC<TestResultsProps> = ({ hollandResult, chasideResult 
 
   return (
     <Tabs defaultValue="holland" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-4">
+      <TabsList className="grid w-full grid-cols-2 mb-2">
         <TabsTrigger value="holland" className="text-sm">
           Prueba Holland
         </TabsTrigger>
@@ -148,19 +147,19 @@ const TestResults: React.FC<TestResultsProps> = ({ hollandResult, chasideResult 
       <TabsContent value="holland" className="mt-0">
         {hollandResult ? (
           <motion.div
-            className="space-y-4"
+            className="space-y-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="w-full h-[250px] sm:h-[300px]">
+            <div className="w-full h-[180px]">
               <Radar data={hollandData} options={chartOptions} />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
               {Object.entries(hollandResult.scores).map(([key, value]) => (
                 <motion.div
                   key={key}
-                  className="flex items-center justify-between p-2 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors"
+                  className="flex items-center justify-between p-1.5 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
@@ -189,19 +188,19 @@ const TestResults: React.FC<TestResultsProps> = ({ hollandResult, chasideResult 
       <TabsContent value="chaside" className="mt-0">
         {chasideResult ? (
           <motion.div
-            className="space-y-4"
+            className="space-y-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="w-full h-[250px] sm:h-[300px]">
+            <div className="w-full h-[180px]">
               <Radar data={chasideData} options={chartOptions} />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
               {Object.entries(chasideResult.scores).map(([key, value]) => (
                 <motion.div
                   key={key}
-                  className="flex items-center justify-between p-2 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors"
+                  className="flex items-center justify-between p-1.5 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
@@ -231,8 +230,15 @@ const TestResults: React.FC<TestResultsProps> = ({ hollandResult, chasideResult 
   );
 };
 
-const ChildRow = memo(
-  ({ child, hollandResult, chasideResult, aiResultsAvailable, setAiResultsAvailable, handleViewCareerComparison }: ChildRowProps) => {
+const UserRow = memo(
+  ({ userId, hollandResult, chasideResult, aiResultsAvailable, setAiResultsAvailable, handleViewCareerComparison }: {
+    userId: string;
+    hollandResult: any;
+    chasideResult: any;
+    aiResultsAvailable: boolean;
+    setAiResultsAvailable: (value: boolean) => void;
+    handleViewCareerComparison: (careers: Career[]) => void;
+  }) => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [isEmploymentDialogOpen, setIsEmploymentDialogOpen] = useState<boolean>(false);
     const [isCarrerCostsDialogOpen, setIsCarrerCostsDialogOpen] = useState<boolean>(false);
@@ -243,7 +249,6 @@ const ChildRow = memo(
     const [allTestsCompleted, setAllTestsCompleted] = useState(false);
     const [existingResults, setExistingResults] = useState<boolean>(false);
     const [recommendedCareers, setRecommendedCareers] = useState<string[]>([]);
-    const [childGender, setChildGender] = useState<number>(child.gender === "male" ? 1 : 0);
     const [isAIThinking, setIsAIThinking] = useState(false);
     const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
     const [infoDialogContent, setInfoDialogContent] = useState({ title: "", message: "" });
@@ -252,6 +257,24 @@ const ChildRow = memo(
     const [isOpen, setIsOpen] = useState(false);
     const [progress, setProgress] = useState(0);
     const [progressMessage, setProgressMessage] = useState("");
+    const [userName, setUserName] = useState<string>("Usuario");
+    const [userGender, setUserGenderState] = useState<string>("0");
+
+    useEffect(() => {
+      const loadUserInfo = async () => {
+        try {
+          const userInfo = await getUserInfo(userId);
+          if (userInfo?.user) {
+            setUserName(`${userInfo.user.firstName} ${userInfo.user.lastName}`);
+            // El género podría estar en userInfo.user.gender si existe
+            setUserGenderState(userInfo.user.gender || "0");
+          }
+        } catch (error) {
+          console.error("Error loading user info:", error);
+        }
+      };
+      loadUserInfo();
+    }, [userId]);
 
     useEffect(() => {
       setAllTestsCompleted(
@@ -262,7 +285,7 @@ const ChildRow = memo(
     useEffect(() => {
       const fetchCareers = async () => {
         try {
-          const careers = await vocationalService.getCareers(getUserId(), child.id);
+          const careers = await vocationalService.getCareers(userId);
           setRecommendedCareers(careers);
         } catch (error) {
           console.error("Error fetching careers:", error);
@@ -271,8 +294,7 @@ const ChildRow = memo(
       };
 
       fetchCareers();
-      setChildGender(child.gender === "male" ? 1 : 0);
-    }, [child]);
+    }, [userId]);
 
     useEffect(() => {
       const loadCompanyCharacteristics = async () => {
@@ -297,7 +319,7 @@ const ChildRow = memo(
     const processResults = useCallback(async () => {
       if (!careerType) return;
 
-      console.log(`[Frontend] Iniciando procesamiento de resultados para ${child.childName}`);
+      console.log(`[Frontend] Iniciando procesamiento de resultados para usuario ${userId}`);
       const startTime = Date.now();
       
       setIsAIThinking(true);
@@ -329,8 +351,8 @@ const ChildRow = memo(
         setTimeout(() => {
           if (finalResult && !isError) {
             setAiResponse(finalResult.result);
-            setAiResultsAvailable((prev) => ({ ...prev, [child.id]: true }));
-            vocationalService.getCareers(getUserId(), child.id).then(updatedCareers => {
+            setAiResultsAvailable(true);
+            vocationalService.getCareers(userId).then(updatedCareers => {
               setRecommendedCareers(updatedCareers);
             });
           } else if (isError) {
@@ -405,15 +427,14 @@ const ChildRow = memo(
       // Iniciar la llamada al backend
       try {
         result = await vocationalService.processResults({
-          userId: getUserId(),
-          childId: child.id,
+          userId: userId,
           careerType,
           selectedCareer,
         });
 
         const endTime = Date.now();
         const processingTime = endTime - startTime;
-        console.log(`[Frontend] Procesamiento completado en ${processingTime}ms para ${child.childName}`);
+        console.log(`[Frontend] Procesamiento completado en ${processingTime}ms para usuario ${userId}`);
         
         // Si el backend respondió antes de 30 segundos, completar inmediatamente
         if (!isCompleted) {
@@ -433,27 +454,27 @@ const ChildRow = memo(
           completeProcessing(result);
         }
       }, 90000);
-    }, [child.id, careerType, selectedCareer, setAiResultsAvailable]);
+    }, [userId, careerType, selectedCareer, setAiResultsAvailable]);
 
     useEffect(() => {
       const checkExistingResults = async () => {
         try {
-          const results = await vocationalService.getCareers(getUserId(), child.id);
+          const results = await vocationalService.getCareers(userId);
           if (results && Array.isArray(results) && results.length > 0) {
-            setAiResultsAvailable((prev) => ({ ...prev, [child.id]: true }));
+            setAiResultsAvailable(true);
             setRecommendedCareers(results);
           } else {
-            setAiResultsAvailable((prev) => ({ ...prev, [child.id]: false }));
+            setAiResultsAvailable(false);
             setRecommendedCareers([]);
           }
         } catch (error) {
           console.error("Error checking existing results:", error);
-          setAiResultsAvailable((prev) => ({ ...prev, [child.id]: false }));
+          setAiResultsAvailable(false);
         }
       };
 
       checkExistingResults();
-    }, [child.id, setAiResultsAvailable]);
+    }, [userId, setAiResultsAvailable]);
 
     useEffect(() => {
       if (!aiResponse || !isDialogOpen) return;
@@ -484,15 +505,14 @@ const ChildRow = memo(
     const checkResults = useCallback(async () => {
       setIsLoading(true);
       try {
-        const aiResults = await vocationalService.getCareers(getUserId(), child.id);
+        const aiResults = await vocationalService.getCareers(userId);
 
         if (aiResults && Array.isArray(aiResults) && aiResults.length > 0) {
           setExistingResults(true);
           setRecommendedCareers(aiResults);
 
           const results = await vocationalService.processResults({
-            userId: getUserId(),
-            childId: child.id,
+            userId: userId,
             careerType: "",
             selectedCareer: "",
           });
@@ -518,7 +538,7 @@ const ChildRow = memo(
       } finally {
         setIsLoading(false);
       }
-    }, [child.id]);
+    }, [userId]);
 
     const handleViewCareerComparisonClick = () => {
       const careers: Career[] = recommendedCareers.map(name => ({
@@ -531,161 +551,138 @@ const ChildRow = memo(
 
     return (
       <>
-        <TableRow className="hover:bg-muted/50 transition-colors group">
-          <TableCell className="font-medium">
-            <div className="flex items-center">
-              <Avatar className="h-6 w-6 mr-2">
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <span>{child.childName}</span>
-            </div>
-          </TableCell>
-          <TableCell className="hidden sm:table-cell">
-            {hollandResult && hollandResult.currentQuestion === HOLLAND_QUESTIONS ? (
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Badge className="flex items-center space-x-1 bg-green-500 hover:bg-green-600 text-white border-0 px-3 py-1 rounded-full font-semibold">
-                  <CheckCircle className="h-3 w-3" />
-                  <span>Completada</span>
-                </Badge>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Badge className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white border-0 px-3 py-1 rounded-full font-semibold">
-                  <XCircle className="h-3 w-3" />
-                  <span>Pendiente</span>
-                </Badge>
-              </motion.div>
-            )}
-          </TableCell>
-          <TableCell className="hidden sm:table-cell">
-            {chasideResult && chasideResult.currentQuestion === CHASIDE_QUESTIONS ? (
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Badge className="flex items-center space-x-1 bg-green-500 hover:bg-green-600 text-white border-0 px-3 py-1 rounded-full font-semibold">
-                  <CheckCircle className="h-3 w-3" />
-                  <span>Completada</span>
-                </Badge>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Badge className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white border-0 px-3 py-1 rounded-full font-semibold">
-                  <XCircle className="h-3 w-3" />
-                  <span>Pendiente</span>
-                </Badge>
-              </motion.div>
-            )}
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center space-x-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        if (!allTestsCompleted) {
-                          showInfoDialog(
-                            "Acción requerida",
-                            "Para procesar los resultados con IA, primero debes completar todas las pruebas de Holland y CHASIDE.",
-                          );
-                        } else if (isAIThinking) {
-                          showInfoDialog("Procesando", "La IA está procesando los resultados. Por favor, espera.");
-                        } else {
-                          checkResults();
-                        }
-                      }}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group"
-                    >
-                      {isLoading ? (
-                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
-                      ) : (
-                        <>
-                          <Stars className="h-4 w-4 group-hover:animate-spin transition-all duration-300" />
-                          <span className="relative z-10">IA</span>
-                        </>
-                      )}
-                    </motion.button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Procesar resultados con IA</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        if (!aiResultsAvailable[child.id]) {
-                          showInfoDialog(
-                            "Acción requerida",
-                            "Para ver los datos de empleo, primero debes procesar los resultados con IA.",
-                          );
-                        } else {
-                          setIsEmploymentDialogOpen(true);
-                        }
-                      }}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <Briefcase className="h-4 w-4" />
-                      <span>Empleo</span>
-                    </motion.button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Ver datos de empleo</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => {
-                        if (!aiResultsAvailable[child.id]) {
-                          showInfoDialog(
-                            "Acción requerida",
-                            "Para comparar los costos de carreras, primero debes procesar los resultados con IA.",
-                          );
-                        } else {
-                          setIsCarrerCostsDialogOpen(true);
-                        }
-                      }}
-                      className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <FileText className="h-4 w-4" />
-                      <span>Costos</span>
-                    </motion.button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Comparar costos de carreras</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </TableCell>
-        </TableRow>
+        {/* Botón IA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <Card className="h-full border-2 border-purple-500/30 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 hover:border-purple-500/60 transition-all duration-300 shadow-lg hover:shadow-2xl">
+            <CardContent className="p-4">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="p-3 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 shadow-lg">
+                  <Stars className="h-6 w-6 text-white" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-lg font-bold">Análisis con IA</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Obtén recomendaciones personalizadas de carreras basadas en tus resultados
+                  </p>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (!allTestsCompleted) {
+                      showInfoDialog(
+                        "Acción requerida",
+                        "Para procesar los resultados con IA, primero debes completar todas las pruebas de Holland y CHASIDE.",
+                      );
+                    } else if (isAIThinking) {
+                      showInfoDialog("Procesando", "La IA está procesando los resultados. Por favor, espera.");
+                    } else {
+                      checkResults();
+                    }
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden group text-sm"
+                >
+                  {isLoading ? (
+                    <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full" />
+                  ) : (
+                    <>
+                      <Stars className="h-5 w-5 group-hover:animate-spin transition-all duration-300" />
+                      <span className="relative z-10">Procesar con IA</span>
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Botón Empleo */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <Card className="h-full border-2 border-green-500/30 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 hover:border-green-500/60 transition-all duration-300 shadow-lg hover:shadow-2xl">
+            <CardContent className="p-4">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="p-3 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 shadow-lg">
+                  <Briefcase className="h-6 w-6 text-white" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-lg font-bold">Datos de Empleo</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Visualiza estadísticas de empleo, salarios y demanda laboral por carrera
+                  </p>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (!aiResultsAvailable) {
+                      showInfoDialog(
+                        "Acción requerida",
+                        "Para ver los datos de empleo, primero debes procesar los resultados con IA.",
+                      );
+                    } else {
+                      setIsEmploymentDialogOpen(true);
+                    }
+                  }}
+                  disabled={!aiResultsAvailable}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
+                >
+                  <Briefcase className="h-5 w-5" />
+                  <span>Ver Empleo</span>
+                </motion.button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Botón Costos */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+        >
+          <Card className="h-full border-2 border-orange-500/30 bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 hover:border-orange-500/60 transition-all duration-300 shadow-lg hover:shadow-2xl">
+            <CardContent className="p-4">
+              <div className="flex flex-col items-center text-center space-y-3">
+                <div className="p-3 rounded-full bg-gradient-to-br from-orange-500 to-red-500 shadow-lg">
+                  <FileText className="h-6 w-6 text-white" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-lg font-bold">Comparar Costos</h4>
+                  <p className="text-xs text-muted-foreground">
+                    Compara los costos de matrícula y programas entre diferentes universidades
+                  </p>
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    if (!aiResultsAvailable) {
+                      showInfoDialog(
+                        "Acción requerida",
+                        "Para comparar los costos de carreras, primero debes procesar los resultados con IA.",
+                      );
+                    } else {
+                      setIsCarrerCostsDialogOpen(true);
+                    }
+                  }}
+                  disabled={!aiResultsAvailable}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
+                >
+                  <FileText className="h-5 w-5" />
+                  <span>Ver Costos</span>
+                </motion.button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
         {/* AI Results Dialog */}
         <Dialog 
@@ -714,7 +711,7 @@ const ChildRow = memo(
           >
             <DialogHeader>
               <DialogTitle className="text-3xl font-bold mb-4 text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                Resultados de {child.childName}
+                Resultados de {userName}
               </DialogTitle>
               <DialogDescription className="text-lg mb-6 text-center">
                 Análisis de IA basado en tus pruebas de orientación vocacional
@@ -862,7 +859,7 @@ const ChildRow = memo(
         <Dialog open={isEmploymentDialogOpen} onOpenChange={setIsEmploymentDialogOpen}>
           <DialogContent className="max-w-7xl max-h-[80vh] overflow-y-auto">
             <DialogTitle></DialogTitle>
-            <SalaryDataVisualization gender={child.gender} careers={mapCareersToFields(recommendedCareers)} />
+            <SalaryDataVisualization gender={userGender} careers={mapCareersToFields(recommendedCareers)} />
           </DialogContent>
         </Dialog>
 
@@ -918,20 +915,17 @@ const ChildRow = memo(
 );
 
 export default memo(function Results({
-  children,
+  userId,
   subscriptions,
-  selectedChildId,
 }: {
-  children: ChildModel[];
-  subscriptions: ChildSubscription[];
-  selectedChildId: string;
+  userId: string;
+  subscriptions: Subscription[];
 }) {
-  const [childrenResults, setChildrenResults] = useState<ChildResult[]>([]);
+  const [userResult, setUserResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [aiResultsAvailable, setAiResultsAvailable] = useState<Record<string, boolean>>({});
+  const [aiResultsAvailable, setAiResultsAvailable] = useState<boolean>(false);
   const [isProjectKitOpen, setIsProjectKitOpen] = useState(false);
-  const [filteredChildren, setFilteredChildren] = useState<ChildModel[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedCareers, setSelectedCareers] = useState<Career[]>([]);
   const [showCareerComparison, setShowCareerComparison] = useState(false);
@@ -967,10 +961,10 @@ export default memo(function Results({
 
     try {
       const timestamp = now;
-      const response = await resultService.getResults(getUserId(), timestamp);
+      const response = await resultService.getResults(userId, timestamp);
 
-      if (response?.childrenResults?.length) {
-        setChildrenResults(response.childrenResults);
+      if (response?.userResult) {
+        setUserResult(response.userResult);
         lastFetchRef.current = now;
       } else {
         setError("Unexpected data format. Please try again later.");
@@ -1006,29 +1000,19 @@ export default memo(function Results({
     };
   }, [fetchResults]);
 
-  useEffect(() => {
-    const filteredIds = subscriptions
-      .filter((sub) => sub.subscriptions.some((s: { moduleId: string }) => s.moduleId === "678d625ce2695682ef90951b"))
-      .map((sub) => sub.childId);
-
-    setFilteredChildren(children.filter((child) => filteredIds.includes(child.id)));
-  }, [children, subscriptions]);
+  const hasSubscription = useMemo(() => {
+    return subscriptions.some((sub) => sub.moduleId === "678d625ce2695682ef90951b");
+  }, [subscriptions]);
 
   const showProjectKit = useMemo(() => {
     return (
-      filteredChildren.length > 0 &&
-      filteredChildren.some((child) => {
-        if (child.id !== selectedChildId) return false;
-        const result = childrenResults.find((r) => r.child._id === child.id);
-        return (
-          result &&
-          result.hollandResult?.currentQuestion === HOLLAND_QUESTIONS &&
-          result.chasideResult?.currentQuestion === CHASIDE_QUESTIONS &&
-          aiResultsAvailable[child.id]
-        );
-      })
+      hasSubscription &&
+      userResult &&
+      userResult.hollandResult?.currentQuestion === HOLLAND_QUESTIONS &&
+      userResult.chasideResult?.currentQuestion === CHASIDE_QUESTIONS &&
+      aiResultsAvailable
     );
-  }, [filteredChildren, selectedChildId, childrenResults, aiResultsAvailable]);
+  }, [hasSubscription, userResult, aiResultsAvailable]);
 
   const breadcrumbItems = [
     {
@@ -1074,42 +1058,139 @@ export default memo(function Results({
   return (
     <PageContainer
       title="Resultados de las Pruebas Vocacionales"
-      description="Visualiza y analiza los resultados de las pruebas vocacionales de tus hijos."
+      description="Visualiza y analiza los resultados de tus pruebas vocacionales."
       breadcrumbItems={breadcrumbItems}
       icon={<FileText className="h-6 w-6" />}
     >
-      <Card className="w-full mx-auto bg-white dark:bg-gray-800 overflow-hidden border-0 shadow-xl rounded-2xl">
-        <CardContent className="p-6 md:p-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[20%]">Nombre del hijo</TableHead>
-                  <TableHead className="hidden sm:table-cell w-[20%]">Prueba Holland</TableHead>
-                  <TableHead className="hidden sm:table-cell w-[20%]">Prueba CHASIDE</TableHead>
-                  <TableHead className="w-[40%]">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredChildren.map((child) => {
-                  const result = childrenResults.find((r) => r.child._id === child.id);
-                  return result ? (
-                    <ChildRow
-                      key={child.id}
-                      child={child}
-                      hollandResult={result.hollandResult}
-                      chasideResult={result.chasideResult}
-                      aiResultsAvailable={aiResultsAvailable}
-                      setAiResultsAvailable={setAiResultsAvailable}
-                      handleViewCareerComparison={handleViewCareerComparison}
-                    />
-                  ) : null;
-                })}
-              </TableBody>
-            </Table>
+      {userResult && (
+        <div className="space-y-4">
+          {/* Header compacto */}
+          <div className="text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-1 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Tus Resultados Vocacionales
+            </h2>
+            <p className="text-muted-foreground text-sm">Análisis completo de orientación vocacional</p>
+          </div>
+
+          {/* Tarjetas de Estado de Pruebas - Compactas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Prueba Holland */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={`border-2 rounded-xl p-4 transition-all duration-300 ${
+                userResult.hollandResult?.currentQuestion === HOLLAND_QUESTIONS
+                  ? "border-green-500/60 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20"
+                  : "border-orange-500/60 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/20"
+              }`}>
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-full ${
+                    userResult.hollandResult?.currentQuestion === HOLLAND_QUESTIONS
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600"
+                      : "bg-gradient-to-br from-orange-500 to-amber-600"
+                  }`}>
+                    {userResult.hollandResult?.currentQuestion === HOLLAND_QUESTIONS ? (
+                      <CheckCircle className="h-6 w-6 text-white" />
+                    ) : (
+                      <XCircle className="h-6 w-6 text-white" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold mb-1">Prueba Holland</h3>
+                    <Badge 
+                      variant={userResult.hollandResult?.currentQuestion === HOLLAND_QUESTIONS ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {userResult.hollandResult?.currentQuestion === HOLLAND_QUESTIONS ? "Completada" : "Pendiente"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Prueba CHASIDE */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={`border-2 rounded-xl p-4 transition-all duration-300 ${
+                userResult.chasideResult?.currentQuestion === CHASIDE_QUESTIONS
+                  ? "border-green-500/60 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/20"
+                  : "border-orange-500/60 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/30 dark:to-amber-950/20"
+              }`}>
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-full ${
+                    userResult.chasideResult?.currentQuestion === CHASIDE_QUESTIONS
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600"
+                      : "bg-gradient-to-br from-orange-500 to-amber-600"
+                  }`}>
+                    {userResult.chasideResult?.currentQuestion === CHASIDE_QUESTIONS ? (
+                      <CheckCircle className="h-6 w-6 text-white" />
+                    ) : (
+                      <XCircle className="h-6 w-6 text-white" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold mb-1">Prueba CHASIDE</h3>
+                    <Badge 
+                      variant={userResult.chasideResult?.currentQuestion === CHASIDE_QUESTIONS ? "default" : "secondary"}
+                      className="text-xs"
+                    >
+                      {userResult.chasideResult?.currentQuestion === CHASIDE_QUESTIONS ? "Completada" : "Pendiente"}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Gráficos de Resultados - Compactos */}
+          {(userResult.hollandResult || userResult.chasideResult) && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="border-t border-border pt-4"
+            >
+              <div className="mb-3 text-center">
+                <h3 className="text-xl font-bold mb-1">Análisis de Resultados</h3>
+              </div>
+              <div className="bg-background/50 rounded-xl p-4 border border-border">
+                <TestResults 
+                  hollandResult={userResult.hollandResult} 
+                  chasideResult={userResult.chasideResult} 
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Acciones - Compactas */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="border-t border-border pt-4"
+          >
+            <div className="mb-4 text-center">
+              <h3 className="text-xl font-bold mb-1">Herramientas de Análisis</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <UserRow
+                key={userId}
+                userId={userId}
+                hollandResult={userResult.hollandResult}
+                chasideResult={userResult.chasideResult}
+                aiResultsAvailable={aiResultsAvailable}
+                setAiResultsAvailable={setAiResultsAvailable}
+                handleViewCareerComparison={handleViewCareerComparison}
+              />
+            </div>
           </motion.div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
 
       {isProjectKitOpen && (
         <Dialog
@@ -1128,8 +1209,7 @@ export default memo(function Results({
           >
             <ProjectKit
               key={`project-kit-${projectKitMountCounter}`}
-              children={children}
-              selectedChildId={selectedChildId}
+              userId={userId}
               forceRefresh={projectKitMountCounter}
               onClose={() => setIsProjectKitOpen(false)}
             />
@@ -1161,7 +1241,7 @@ export default memo(function Results({
               <Stars className="h-12 w-12 text-yellow-400 animate-spin-slow transition-all mx-auto mb-4" />
               <p className="text-lg mb-4">
                 Has desbloqueado el acceso al Kit Proyecto de Vida Juvenil por completar el módulo de Orientación
-                Vocacional para {childrenResults.length === 1 ? "tu hijo" : "tus hijos"} con la suscripción
+                Vocacional con la suscripción
                 correspondiente.
               </p>
               <p className="text-sm text-muted-foreground mb-6">

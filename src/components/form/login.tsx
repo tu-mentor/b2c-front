@@ -1,6 +1,6 @@
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, EyeOff, Lock, LogIn, Phone, Sparkles, Video } from "lucide-react";
+import { Eye, EyeOff, Lock, LogIn, Mail, Sparkles, Video } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -106,25 +106,31 @@ export default function LoginForm({ onFlip, onPasswordResetFlip }: LoginFormProp
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <Label htmlFor="whatsapp" className="text-gray-700 dark:text-gray-300 font-semibold mb-2 block">
-                Número de Teléfono
+              <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 font-semibold mb-2 block">
+                Correo Electrónico
               </Label>
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors duration-300">
-                  <Phone className="w-5 h-5" />
+                  <Mail className="w-5 h-5" />
                 </div>
                 <Input
-                  id="whatsapp"
-                  type="tel"
-                  placeholder="Ingrese su número"
+                  id="email"
+                  type="email"
+                  placeholder="Ingrese su correo electrónico"
                   className="pl-10 w-full bg-white/80 dark:bg-gray-800/80 border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 text-gray-900 dark:text-gray-100 rounded-xl transition-all duration-300 focus:ring-2 focus:ring-blue-500/20"
-                  {...register("whatsapp", { required: "El número de teléfono es requerido" })}
+                  {...register("email", { 
+                    required: "El correo electrónico es requerido",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "Correo electrónico inválido"
+                    }
+                  })}
                 />
               </div>
-              {errors.whatsapp && (
+              {errors.email && (
                 <p className="text-red-500 text-sm mt-2 flex items-center">
                   <span className="w-1 h-1 bg-red-500 rounded-full mr-2" />
-                  {errors.whatsapp.message}
+                  {errors.email.message}
                 </p>
               )}
             </div>

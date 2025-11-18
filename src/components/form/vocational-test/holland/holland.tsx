@@ -66,42 +66,50 @@ const AnimatedIcon = ({ type }: { type: PersonalityType; score: number }) => {
 
 const saveOrUpdateTestProgress = async (
   id: string | null,
-  childId: string,
+  userId: string,
   currentQuestion: number,
   scores: Record<PersonalityType, number>
 ): Promise<string> => {
-  const data = {
-    childId,
-    currentQuestion,
-    scores: {
-      realistic: scores.Realista,
-      investigative: scores.Investigador,
-      artistic: scores.Artístico,
-      social: scores.Social,
-      enterprising: scores.Emprendedor,
-      conventional: scores.Convencional,
-    },
-    careers: [],
+  const scoresData = {
+    realistic: scores.Realista,
+    investigative: scores.Investigador,
+    artistic: scores.Artístico,
+    social: scores.Social,
+    enterprising: scores.Emprendedor,
+    conventional: scores.Convencional,
   };
 
   if (id) {
-    await hollandTestService.updateHollandTest(id, data);
+    // Para update, no enviamos userId
+    const updateData = {
+      currentQuestion,
+      scores: scoresData,
+      careers: [],
+    };
+    await hollandTestService.updateHollandTest(id, updateData);
     return id;
   } else {
-    const newHolland = await hollandTestService.createHollandTest(data);
+    // Para create, sí enviamos userId
+    const createData = {
+      userId,
+      currentQuestion,
+      scores: scoresData,
+      careers: [],
+    };
+    const newHolland = await hollandTestService.createHollandTest(createData);
     return newHolland.id;
   }
 };
 
 const loadSavedProgress = async (
-  childId: string
+  userId: string
 ): Promise<{
   id: string;
   currentQuestion: number;
   scores: Record<PersonalityType, number>;
 } | null> => {
   try {
-    const savedData = await hollandTestService.getHollandTestByChildId(childId);
+    const savedData = await hollandTestService.getHollandTestByUserId(userId);
     if (savedData) {
       return {
         id: savedData._id,
@@ -116,7 +124,10 @@ const loadSavedProgress = async (
         },
       };
     }
-  } catch (error) {}
+  } catch (error) {
+    // Si hay un error diferente a 404, lo registramos pero no fallamos
+    console.error("Error loading saved progress:", error);
+  }
   return null;
 };
 
@@ -159,7 +170,7 @@ export default function HollandVocationalTest() {
   });
   const [dominantType, setDominantType] = useState<PersonalityType | null>(null);
   const [showResults, setShowResults] = useState(false);
-  const [childId, setChildId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingResults, setIsSavingResults] = useState(false);
@@ -191,11 +202,11 @@ export default function HollandVocationalTest() {
       }
 
       const userInfo = await getUserInfo(getUserId());
-      if (userInfo?.user.selectedChildren) {
-        setChildId(userInfo.user.selectedChildren);
+      if (userInfo?.user.id) {
+        setUserId(userInfo.user.id);
         // Usamos una marca de tiempo para evitar la caché
         const timestamp = Date.now();
-        const savedProgress = await loadSavedProgress(userInfo.user.selectedChildren);
+        const savedProgress = await loadSavedProgress(userInfo.user.id);
 
         if (savedProgress) {
           setId(savedProgress.id);
@@ -273,7 +284,7 @@ export default function HollandVocationalTest() {
   }, [showResults, scores]);
 
   const handleAnswer = async (answer: number) => {
-    if (isLoading || !childId || isSaving) return;
+    if (isLoading || !userId || isSaving) return;
 
     setIsSaving(true);
 
@@ -294,7 +305,7 @@ export default function HollandVocationalTest() {
           try {
             const hollandId = await saveOrUpdateTestProgress(
               id,
-              childId,
+              userId,
               newCurrentQuestion,
               newScores
             );
@@ -312,7 +323,7 @@ export default function HollandVocationalTest() {
           try {
             const hollandId = await debouncedSaveOrUpdateTestProgress(
               id,
-              childId,
+              userId,
               newCurrentQuestion,
               newScores
             );
@@ -331,7 +342,7 @@ export default function HollandVocationalTest() {
   };
 
   const handlePrevious = async () => {
-    if (currentQuestion > 0 && childId && !isSaving) {
+    if (currentQuestion > 0 && userId && !isSaving) {
       setIsSaving(true);
 
       try {
@@ -356,7 +367,7 @@ export default function HollandVocationalTest() {
         }
 
         try {
-          await debouncedSaveOrUpdateTestProgress(id, childId, newCurrentQuestion, scores);
+          await debouncedSaveOrUpdateTestProgress(id, userId, newCurrentQuestion, scores);
         } catch (error) {
           console.error("Error saving progress:", error);
         }
@@ -507,8 +518,7 @@ export default function HollandVocationalTest() {
       breadcrumbItems={breadcrumbItems}
       icon={<Target className="h-6 w-6" />}
     >
-      <Card className="w-full mx-auto bg-white dark:bg-gray-800 overflow-hidden border-0 shadow-lg font-asap">
-        <CardContent className="p-4 md:p-6 text-center container max-w-7xl mx-auto">
+      <div className="w-full mx-auto text-center container max-w-7xl space-y-4">
           {!showResults && (
             <p className="mb-6 text-base md:text-lg text-gray-600 dark:text-gray-300">
    
@@ -521,17 +531,14 @@ export default function HollandVocationalTest() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-8 md:space-y-12"
+                className="space-y-4"
                 ref={resultsRef}
               >
-                <Card className="bg-white dark:bg-gray-700 shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-semibold text-primary dark:text-primary-foreground">
-                      Desglose de tu perfil
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="bg-white dark:bg-gray-700 rounded-lg border border-border p-4">
+                  <h3 className="text-lg font-semibold text-primary dark:text-primary-foreground mb-3">
+                    Desglose de tu perfil
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {Object.entries(scores)
                         .sort(([, a], [, b]) => b - a)
                         .map(([type, score]) => (
@@ -564,32 +571,24 @@ export default function HollandVocationalTest() {
                           </div>
                         ))}
                     </div>
-                  </CardContent>
-                </Card>
+                </div>
 
-                <Card className="bg-primary text-primary-foreground">
-                  <CardHeader className="py-4">
-                    <CardTitle className="text-xl font-bold">
-                      Tu tipo de personalidad dominante
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-lg font-bold mb-2">{dominantType}</p>
-                    <p className="text-sm">
-                      {dominantType && getPersonalityDescription(dominantType)}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="bg-primary text-primary-foreground rounded-lg p-4">
+                  <h3 className="text-lg font-bold mb-2">
+                    Tu tipo de personalidad dominante
+                  </h3>
+                  <p className="text-base font-bold mb-1">{dominantType}</p>
+                  <p className="text-sm">
+                    {dominantType && getPersonalityDescription(dominantType)}
+                  </p>
+                </div>
 
                 {dominantType && (
-                  <Card className="bg-white dark:bg-gray-700 shadow-md">
-                    <CardHeader>
-                      <CardTitle className="text-xl font-semibold text-primary dark:text-primary-foreground">
-                        Perfil detallado: {dominantType}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                  <div className="bg-white dark:bg-gray-700 rounded-lg border border-border p-4">
+                    <h3 className="text-lg font-semibold text-primary dark:text-primary-foreground mb-3">
+                      Perfil detallado: {dominantType}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-left">
                           <h4 className="font-semibold text-base mb-2 text-primary dark:text-primary-foreground">
                             Fortalezas:
@@ -633,8 +632,7 @@ export default function HollandVocationalTest() {
                           </ul>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                </div>
                 )}
               </motion.div>
             ) : (
@@ -644,14 +642,14 @@ export default function HollandVocationalTest() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-6"
+                className="space-y-4"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-base font-semibold text-gray-700 dark:text-gray-300">
                     Pregunta {currentQuestion + 1} de {questions.length}
                   </span>
                   <div className="flex-1 mx-4">
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner overflow-hidden">
+                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner overflow-hidden">
                       <motion.div
                         className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
                         initial={{ width: 0 }}
@@ -661,30 +659,28 @@ export default function HollandVocationalTest() {
                       />
                     </div>
                   </div>
-                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <span className="text-base font-bold text-blue-600 dark:text-blue-400">
                     {Math.round(((currentQuestion + 1) / questions.length) * 100)}%
                   </span>
                 </div>
-                <Card className="bg-white dark:bg-gray-700 shadow-xl border-0 rounded-2xl overflow-hidden">
-                  <CardContent className="p-4 md:p-8">
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
-                      <div className="space-y-8">
+                <div className="bg-white dark:bg-gray-700 rounded-lg border border-border p-4">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    <div className="space-y-4">
                         <div className="w-full text-left">
-                          <h3 className="text-lg md:text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
-                            <span className="mr-2 md:mr-3 text-xl md:text-2xl">🤔</span>
+                          <h3 className="text-base font-bold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+                            <span className="mr-2 text-lg">🤔</span>
                             ¿Qué tan de acuerdo estás con la siguiente afirmación?
                           </h3>
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl border-2 border-blue-200 dark:border-gray-600 shadow-lg">
-                                                        {/* Badge del tipo de personalidad */}
-                            <div className="flex items-center justify-center mb-4">
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-lg border border-blue-200 dark:border-gray-600">
+                            <div className="flex items-center justify-center mb-3">
+                              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
                                 {personalityIcons[questions[currentQuestion]?.type as PersonalityType]}
                                 <span className="ml-2">
                                   {questions[currentQuestion]?.type}
                                 </span>
                               </span>
                             </div>
-                            <p className="text-lg md:text-xl text-gray-800 dark:text-gray-200 font-medium leading-relaxed">
+                            <p className="text-base text-gray-800 dark:text-gray-200 font-medium leading-relaxed">
                               {currentQuestion < questions.length
                                 ? questions[currentQuestion].text
                                 : ""}
@@ -692,13 +688,10 @@ export default function HollandVocationalTest() {
                           </div>
                         </div>
                         <div className="w-full text-left">
-                          <h3 className="text-xl font-semibold mb-4 text-primary dark:text-primary-foreground">
+                          <h3 className="text-base font-semibold mb-2 text-primary dark:text-primary-foreground">
                             Tu respuesta
                           </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                            Selecciona el emoji que mejor represente tu nivel de acuerdo:
-                          </p>
-                          <div className="flex flex-wrap justify-start gap-2 md:gap-3 lg:gap-6 mt-6">
+                          <div className="flex flex-wrap justify-start gap-2 mt-3">
                             {[
                               { value: 1, emoji: "😕", description: "No me gusta nada", shortDesc: "No me gusta", color: "bg-red-50 border-red-200", hoverColor: "hover:bg-red-100 hover:border-red-300", textColor: "text-red-600" },
                               { value: 2, emoji: "😐", description: "No me gusta mucho", shortDesc: "No me gusta mucho", color: "bg-orange-50 border-orange-200", hoverColor: "hover:bg-orange-100 hover:border-orange-300", textColor: "text-orange-600" },
@@ -709,21 +702,21 @@ export default function HollandVocationalTest() {
                               <TooltipProvider key={value}>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <div className="flex flex-col items-center space-y-1 md:space-y-2 lg:space-y-3 min-w-0">
+                                    <div className="flex flex-col items-center space-y-1 w-[calc(20%-0.4rem)] min-w-[70px] max-w-[90px]">
                                       <motion.button
-                                        whileHover={{ scale: isSaving ? 1 : 1.15, y: -2 }}
+                                        whileHover={{ scale: isSaving ? 1 : 1.1, y: -2 }}
                                         whileTap={{ scale: isSaving ? 1 : 0.95 }}
                                         onClick={() => handleAnswer(value)}
-                                        className={`w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-xl md:rounded-2xl border-2 shadow-sm ${
+                                        className={`w-12 h-12 rounded-lg border-2 shadow-sm ${
                                           isSaving 
                                             ? "border-gray-300 bg-gray-50" 
-                                            : `${color} ${hoverColor} hover:shadow-md transform transition-all duration-300 ease-out hover:scale-105`
-                                        } flex items-center justify-center text-xl sm:text-2xl md:text-3xl lg:text-4xl backdrop-blur-sm`}
+                                            : `${color} ${hoverColor} hover:shadow-md transform transition-all duration-300 ease-out`
+                                        } flex items-center justify-center text-xl backdrop-blur-sm`}
                                         disabled={isSaving}
                                       >
                                         {emoji}
                                       </motion.button>
-                                      <span className={`text-xs sm:text-sm font-semibold text-center break-words ${textColor}`}>
+                                      <span className={`text-xs font-semibold text-center break-words ${textColor} leading-tight`}>
                                         {shortDesc}
                                       </span>
                                     </div>
@@ -738,7 +731,7 @@ export default function HollandVocationalTest() {
                             ))}
                           </div>
                           {isSaving && (
-                            <div className="text-left text-primary font-medium mb-4 mt-4">
+                            <div className="text-left text-primary font-medium mb-2 mt-2 text-sm">
                               <span className="animate-pulse">
                                 {currentQuestion === questions.length - 1
                                   ? "Procesando tus resultados finales..."
@@ -755,10 +748,10 @@ export default function HollandVocationalTest() {
                           >
                             <Button
                               onClick={handlePrevious}
-                              className="mt-6 flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 transition-all duration-300 hover:shadow-lg"
+                              className="mt-3 flex items-center justify-center px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-gray-700 dark:text-gray-300 transition-all duration-300 text-sm"
                               disabled={isSaving}
                             >
-                              <ChevronLeft className="mr-2 h-5 w-5" />
+                              <ChevronLeft className="mr-2 h-4 w-4" />
                               {isSaving ? (
                                 <span className="animate-pulse">Guardando...</span>
                               ) : (
@@ -769,28 +762,28 @@ export default function HollandVocationalTest() {
                         )}
                         
                         {/* Información adicional para llenar espacio */}
-                        <div className="w-full text-left mt-8">
-                          <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-2xl border-2 border-purple-200 dark:border-gray-600 shadow-lg">
-                            <h4 className="text-lg font-semibold mb-3 text-purple-700 dark:text-purple-300 flex items-center">
-                              <span className="mr-2 text-xl">💡</span>
+                        <div className="w-full text-left mt-4">
+                          <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 p-3 rounded-lg border border-purple-200 dark:border-gray-600">
+                            <h4 className="text-sm font-semibold mb-2 text-purple-700 dark:text-purple-300 flex items-center">
+                              <span className="mr-2 text-base">💡</span>
                               Consejo para responder
                             </h4>
-                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
                               Responde de manera honesta y espontánea. No hay respuestas correctas o incorrectas. 
                               Esta prueba está diseñada para descubrir tus preferencias naturales y fortalezas innatas.
-                              <span className="block mt-2 font-medium text-purple-600 dark:text-purple-400">
+                              <span className="block mt-1 font-medium text-purple-600 dark:text-purple-400">
                                 🔒 Nadie más verá tus respuestas - son completamente privadas y confidenciales.
                               </span>
                             </p>
                           </div>
                         </div>
                       </div>
-                      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 p-4 md:p-6 lg:p-8 rounded-2xl border-2 border-gray-200 dark:border-gray-600 shadow-lg">
-                        <h4 className="text-base md:text-lg font-bold text-gray-800 dark:text-gray-200 mb-4 md:mb-6 flex items-center">
-                          <BarChart3 className="mr-3 h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                          <BarChart3 className="mr-2 h-4 w-4 text-blue-600 dark:text-blue-400" />
                           Resultados preliminares
                         </h4>
-                        <div className="space-y-4 md:space-y-6">
+                        <div className="space-y-3">
                           {Object.entries(scores).map(([type, score]) => (
                             <div key={type} className="space-y-2">
                               <div className="flex justify-between items-center">
@@ -805,7 +798,7 @@ export default function HollandVocationalTest() {
                               <div className="relative">
                                 <Progress
                                   value={(score / getMaxScorePerType()) * 100}
-                                  className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+                                  className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
                                 />
                                 <motion.div
                                   className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
@@ -820,12 +813,12 @@ export default function HollandVocationalTest() {
                         </div>
                         
                         {/* Información adicional sobre el test */}
-                        <div className="mt-8 p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-600">
-                          <h5 className="text-base font-semibold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
-                            <span className="mr-2 text-lg">📊</span>
+                        <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
+                          <h5 className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200 flex items-center">
+                            <span className="mr-2 text-base">📊</span>
                             Sobre el test de Holland
                           </h5>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                             El test de Holland evalúa 6 tipos de personalidad: Realista, Investigador, Artístico, 
                             Social, Emprendedor y Convencional. Cada tipo representa diferentes intereses y 
                             preferencias profesionales que te ayudarán a encontrar tu vocación ideal.
@@ -833,13 +826,11 @@ export default function HollandVocationalTest() {
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
-        </CardContent>
-      </Card>
+      </div>
     </PageContainer>
   );
 }

@@ -227,38 +227,6 @@ export default function InstructionsVocationalTest({ totalChildren }: Vocational
           
           <TabsContent value="process" className="mt-8">
             <div className="space-y-8">
-              {/* Multiple Children Reminder */}
-              {totalChildren > 2 && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                >
-                                     <Card className="relative overflow-hidden border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 shadow-lg">
-                     <div className="absolute top-0 left-0 w-full h-1 bg-yellow-500"></div>
-                     <CardContent className="p-6 flex items-start space-x-4 relative z-10">
-                       <div className="flex-shrink-0 w-14 h-14 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-lg">
-                         <Star className="w-7 h-7 animate-pulse" />
-                       </div>
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-bold mb-3 text-yellow-800 dark:text-yellow-200">
-                          ⚠️ Un pequeño recordatorio
-                        </h3>
-                        <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
-                          <span className="font-semibold text-yellow-600 dark:text-yellow-400">
-                            En la parte superior derecha de la plataforma encuentras la opción para seleccionar el nombre
-                          </span>{" "}
-                          de quien va a realizar las pruebas; esto es indispensable ya que los resultados de las pruebas
-                          se asignan para cada hijo.
-                        </p>
-                      </div>
-                    </CardContent>
-                    <div className="absolute top-4 right-4 text-yellow-500 animate-bounce">
-                      <ArrowUp className="w-8 h-8" />
-                    </div>
-                  </Card>
-                </motion.div>
-              )}
 
                              {/* Process Steps */}
                <div className="space-y-6">

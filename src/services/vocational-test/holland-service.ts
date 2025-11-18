@@ -11,12 +11,16 @@ export const hollandTestService = {
     }
   },
 
-  async getHollandTestByChildId(childId: string): Promise<ResponseHollandDto> {
+  async getHollandTestByUserId(userId: string): Promise<ResponseHollandDto | null> {
     try {
       const timestamp = Date.now();
-      const response = await api.get<ResponseHollandDto>(`/holland-test?childId=${childId}&t=${timestamp}`);
+      const response = await api.get<ResponseHollandDto>(`/holland-test?userId=${userId}&t=${timestamp}`);
       return response;
-    } catch (error) {
+    } catch (error: any) {
+      // Si es un 404, retornamos null (no hay test guardado aún)
+      if (error?.response?.status === 404) {
+        return null;
+      }
       throw new Error("Failed to fetch Holland test. Please try again.");
     }
   },

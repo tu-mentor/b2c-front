@@ -1,4 +1,4 @@
-import { ChildSubscription, CompanySuscriptionResponse } from "../types/suscriptions";
+import { ChildSubscription, CompanySuscriptionResponse, UserSubscription } from "../types/suscriptions";
 import api from "./api";
 
 export const suscriptionService = {
@@ -7,8 +7,8 @@ export const suscriptionService = {
     return response;
   },
 
-  async getUserSuscription(id: string): Promise<ChildSubscription[]> {
-    const response = await api.get<any>(`/subscriptions/user/${id}`);
+  async getUserSuscription(id: string): Promise<UserSubscription> {
+    const response = await api.get<UserSubscription>(`/subscriptions/user/${id}`);
     return response;
   },
 };

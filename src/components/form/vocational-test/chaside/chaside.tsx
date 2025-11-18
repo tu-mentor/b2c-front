@@ -31,7 +31,7 @@ ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, ChartTool
 
 const saveOrUpdateTestProgress = async (
   id: string | null,
-  childId: string,
+  userId: string,
   currentQuestion: number,
   scores: Record<PersonalityType, number>
 ): Promise<string> => {
@@ -44,7 +44,7 @@ const saveOrUpdateTestProgress = async (
     .map((career) => career.text);
 
   const data = {
-    childId,
+    userId,
     currentQuestion,
     scores: {
       C: scores.C,
@@ -90,14 +90,14 @@ function debounce<T extends (...args: any[]) => Promise<any>>(
 const debouncedSaveOrUpdateTestProgress = debounce(saveOrUpdateTestProgress, 0);
 
 const loadSavedProgress = async (
-  childId: string
+  userId: string
 ): Promise<{
   id: string;
   currentQuestion: number;
   scores: Record<PersonalityType, number>;
 } | null> => {
   try {
-    const savedData = await chasideTestService.getChasideTestByChildId(childId);
+    const savedData = await chasideTestService.getChasideTestByUserId(userId);
     if (savedData) {
       return {
         id: savedData.id,
@@ -129,7 +129,7 @@ export default function ChasideVocationalTest() {
     E: 0,
   });
   const [showResults, setShowResults] = useState(false);
-  const [childId, setChildId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [id, setId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [dominantType, setDominantType] = useState<PersonalityType | null>(null);
@@ -161,11 +161,11 @@ export default function ChasideVocationalTest() {
 
       const userInfo = await getUserInfo(getUserId());
 
-      if (userInfo?.user.selectedChildren) {
-        setChildId(userInfo.user.selectedChildren);
+      if (userInfo?.user.id) {
+        setUserId(userInfo.user.id);
 
         try {
-          const savedProgress = await loadSavedProgress(userInfo.user.selectedChildren);
+          const savedProgress = await loadSavedProgress(userInfo.user.id);
 
           if (savedProgress) {
             setId(savedProgress.id);
@@ -240,7 +240,7 @@ export default function ChasideVocationalTest() {
   }, [scores]);
 
   const handleAnswer = async (answer: boolean) => {
-    if (isLoading || !childId || isSaving) return;
+    if (isLoading || !userId || isSaving) return;
 
     setIsSaving(true);
 
@@ -258,7 +258,7 @@ export default function ChasideVocationalTest() {
 
         const chasideId = await debouncedSaveOrUpdateTestProgress(
           id,
-          childId,
+          userId,
           newCurrentQuestion,
           newScores
         );
@@ -268,7 +268,7 @@ export default function ChasideVocationalTest() {
 
         const chasideId = await debouncedSaveOrUpdateTestProgress(
           id,
-          childId,
+          userId,
           newCurrentQuestion,
           newScores
         );
@@ -282,7 +282,7 @@ export default function ChasideVocationalTest() {
   };
 
   const handlePrevious = async () => {
-    if (currentQuestion > 0 && childId && !isSaving) {
+    if (currentQuestion > 0 && userId && !isSaving) {
       setIsSaving(true);
 
       try {
@@ -295,7 +295,7 @@ export default function ChasideVocationalTest() {
         };
         setScores(newScores);
 
-        await debouncedSaveOrUpdateTestProgress(id, childId, newCurrentQuestion, newScores);
+        await debouncedSaveOrUpdateTestProgress(id, userId, newCurrentQuestion, newScores);
       } catch (error) {
         console.error("Error saving progress:", error);
       } finally {
@@ -353,8 +353,7 @@ export default function ChasideVocationalTest() {
       breadcrumbItems={breadcrumbItems}
       icon={<Lightbulb className="h-6 w-6" />}
     >
-      <Card className="w-full mx-auto bg-white dark:bg-gray-800 overflow-hidden border-0 shadow-lg font-asap">
-        <CardContent className="p-4 md:p-6 text-center container max-w-7xl mx-auto">
+      <div className="w-full mx-auto text-center container max-w-7xl space-y-4">
           {!showResults && (
             <p className="mb-6 text-base md:text-lg text-gray-600 dark:text-gray-300">
           
@@ -368,14 +367,14 @@ export default function ChasideVocationalTest() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-6"
+                className="space-y-4"
               >
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-base font-semibold text-gray-700 dark:text-gray-300">
                     Pregunta {currentQuestion + 1} de {questions.length}
                   </span>
                   <div className="flex-1 mx-4">
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner overflow-hidden">
+                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner overflow-hidden">
                       <motion.div
                         className="h-full bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
                         initial={{ width: 0 }}
@@ -385,30 +384,28 @@ export default function ChasideVocationalTest() {
                       />
                     </div>
                   </div>
-                  <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                  <span className="text-base font-bold text-blue-600 dark:text-blue-400">
                     {Math.round(((currentQuestion + 1) / questions.length) * 100)}%
                   </span>
                 </div>
-                <Card className="bg-white dark:bg-gray-700 shadow-xl border-0 rounded-2xl overflow-hidden">
-                  <CardContent className="p-8">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                      <div className="space-y-8">
+                <div className="bg-white dark:bg-gray-700 rounded-lg border border-border p-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div className="space-y-4">
                         <div className="w-full text-left">
-                          <h3 className="text-xl font-bold mb-6 text-gray-800 dark:text-gray-200 flex items-center">
-                            <span className="mr-3 text-2xl">❓</span>
+                          <h3 className="text-base font-bold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+                            <span className="mr-2 text-lg">❓</span>
                             Responde la siguiente pregunta
                           </h3>
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl border-2 border-blue-200 dark:border-gray-600 shadow-lg">
-                                                        {/* Badge del tipo de personalidad */}
-                            <div className="flex items-center justify-center mb-4">
-                              <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-lg border border-blue-200 dark:border-gray-600">
+                            <div className="flex items-center justify-center mb-3">
+                              <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200 border border-blue-200 dark:border-blue-700">
                                 {personalityIcons[questions[currentQuestion]?.type as PersonalityType]}
                                 <span className="ml-2">
                                   {questions[currentQuestion]?.type} - {personalityMeanings[questions[currentQuestion]?.type as PersonalityType]}
                                 </span>
                               </span>
                             </div>
-                            <p className="text-lg md:text-xl text-gray-800 dark:text-gray-200 font-medium leading-relaxed">
+                            <p className="text-base text-gray-800 dark:text-gray-200 font-medium leading-relaxed">
                               {currentQuestion < questions.length
                                 ? questions[currentQuestion].text
                                 : ""}
@@ -416,28 +413,28 @@ export default function ChasideVocationalTest() {
                           </div>
                         </div>
                         <div className="w-full text-left">
-                          <h3 className="text-xl font-semibold mb-4 text-primary dark:text-primary-foreground">
+                          <h3 className="text-base font-semibold mb-2 text-primary dark:text-primary-foreground">
                             Tu respuesta
                           </h3>
-                          <div className="flex space-x-6">
+                          <div className="flex space-x-4">
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <motion.button
-                                    whileHover={{ scale: isSaving ? 1 : 1.15, y: -2 }}
+                                    whileHover={{ scale: isSaving ? 1 : 1.1, y: -2 }}
                                     whileTap={{ scale: isSaving ? 1 : 0.95 }}
                                     onClick={() => handleAnswer(true)}
-                                    className={`w-32 h-16 rounded-2xl ${
+                                    className={`w-28 h-12 rounded-lg ${
                                       isSaving ? "bg-green-300" : "bg-green-500 hover:bg-green-600"
-                                    } text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2`}
+                                    } text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 text-sm`}
                                     disabled={isSaving}
                                   >
                                     {isSaving ? (
                                       <span className="animate-pulse">...</span>
                                     ) : (
                                       <>
-                                        <Check className="h-6 w-6" />
-                                        <span className="text-base font-semibold">Sí</span>
+                                        <Check className="h-4 w-4" />
+                                        <span className="font-semibold">Sí</span>
                                       </>
                                     )}
                                   </motion.button>
@@ -451,20 +448,20 @@ export default function ChasideVocationalTest() {
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <motion.button
-                                    whileHover={{ scale: isSaving ? 1 : 1.15, y: -2 }}
+                                    whileHover={{ scale: isSaving ? 1 : 1.1, y: -2 }}
                                     whileTap={{ scale: isSaving ? 1 : 0.95 }}
                                     onClick={() => handleAnswer(false)}
-                                    className={`w-32 h-16 rounded-2xl ${
+                                    className={`w-28 h-12 rounded-lg ${
                                       isSaving ? "bg-red-300" : "bg-red-500 hover:bg-red-600"
-                                    } text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2`}
+                                    } text-white shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 text-sm`}
                                     disabled={isSaving}
                                   >
                                     {isSaving ? (
                                       <span className="animate-pulse">...</span>
                                     ) : (
                                       <>
-                                        <X className="h-6 w-6" />
-                                        <span className="text-base font-semibold">No</span>
+                                        <X className="h-4 w-4" />
+                                        <span className="font-semibold">No</span>
                                       </>
                                     )}
                                   </motion.button>
@@ -484,38 +481,38 @@ export default function ChasideVocationalTest() {
                           >
                             <Button
                               onClick={handlePrevious}
-                              className="mt-6 flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border-2 border-gray-300 dark:border-gray-600 rounded-xl font-semibold text-gray-700 dark:text-gray-300 transition-all duration-300 hover:shadow-lg"
+                              className="mt-3 flex items-center justify-center px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-gray-700 dark:text-gray-300 transition-all duration-300 text-sm"
                               disabled={isSaving}
                             >
-                              <ChevronLeft className="mr-2 h-5 w-5" />
+                              <ChevronLeft className="mr-2 h-4 w-4" />
                               {isSaving ? "Guardando..." : "Anterior"}
                             </Button>
                           </motion.div>
                         )}
                         
                         {/* Información adicional para llenar espacio */}
-                        <div className="w-full text-left mt-8 space-y-6">
-                          <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-2xl border-2 border-purple-200 dark:border-gray-600 shadow-lg">
-                            <h4 className="text-lg font-semibold mb-3 text-purple-700 dark:text-purple-300 flex items-center">
-                              <span className="mr-2 text-xl">💡</span>
+                        <div className="w-full text-left mt-4 space-y-3">
+                          <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 p-3 rounded-lg border border-purple-200 dark:border-gray-600">
+                            <h4 className="text-sm font-semibold mb-2 text-purple-700 dark:text-purple-300 flex items-center">
+                              <span className="mr-2 text-base">💡</span>
                               Consejo para responder
                             </h4>
-                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                            <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
                               Responde de manera honesta y espontánea. No hay respuestas correctas o incorrectas. 
                               Esta prueba está diseñada para descubrir tus preferencias naturales y fortalezas innatas.
-                              <span className="block mt-2 font-medium text-purple-600 dark:text-purple-400">
+                              <span className="block mt-1 font-medium text-purple-600 dark:text-purple-400">
                                 🔒 Nadie más verá tus respuestas - son completamente privadas y confidenciales.
                               </span>
                             </p>
                           </div>
                           
                           {/* Información adicional sobre el test */}
-                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-6 rounded-2xl border-2 border-blue-200 dark:border-gray-600 shadow-lg">
-                            <h5 className="text-base font-semibold mb-3 text-blue-700 dark:text-blue-300 flex items-center">
-                              <span className="mr-2 text-lg">📊</span>
+                          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 p-3 rounded-lg border border-blue-200 dark:border-gray-600">
+                            <h5 className="text-sm font-semibold mb-2 text-blue-700 dark:text-blue-300 flex items-center">
+                              <span className="mr-2 text-base">📊</span>
                               Sobre el test CHASIDE
                             </h5>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                               El test CHASIDE evalúa 7 dimensiones de personalidad: Creatividad, Habilidad, 
                               Adaptabilidad, Sociabilidad, Inteligencia, Determinación y Empatía. 
                               Cada respuesta contribuye a tu perfil único.
@@ -523,12 +520,12 @@ export default function ChasideVocationalTest() {
                           </div>
                         </div>
                       </div>
-                      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 p-8 rounded-2xl border-2 border-gray-200 dark:border-gray-600 shadow-lg">
-                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6 flex items-center">
-                          <Target className="mr-3 h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <div className="bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <h4 className="text-sm font-bold text-gray-800 dark:text-gray-200 mb-3 flex items-center">
+                          <Target className="mr-2 h-4 w-4 text-blue-600 dark:text-blue-400" />
                           Perfil de personalidad actual
                         </h4>
-                        <div className="space-y-6">
+                        <div className="space-y-3">
                           {Object.entries(scores).map(([type, score]) => (
                             <div key={type} className="space-y-2">
                               <div className="flex justify-between items-center">
@@ -545,7 +542,7 @@ export default function ChasideVocationalTest() {
                               <div className="relative">
                                 <Progress
                                   value={(score / questions.filter((q) => q.type === type).length) * 100}
-                                  className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
+                                  className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden"
                                 />
                                 <motion.div
                                   className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full"
@@ -560,8 +557,7 @@ export default function ChasideVocationalTest() {
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                </div>
               </motion.div>
             ) : (
               <motion.div
@@ -569,17 +565,14 @@ export default function ChasideVocationalTest() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="space-y-8 md:space-y-12"
+                className="space-y-4"
                 ref={resultsRef}
               >
-                <Card className="bg-white dark:bg-gray-700 shadow-md">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-semibold text-primary dark:text-primary-foreground">
-                      Desglose de tu perfil
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="bg-white dark:bg-gray-700 rounded-lg border border-border p-4">
+                  <h3 className="text-lg font-semibold text-primary dark:text-primary-foreground mb-3">
+                    Desglose de tu perfil
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {Object.entries(scores).map(([type, score]) => (
                         <div key={type} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
                           <div className="flex justify-between items-center mb-2">
@@ -610,33 +603,25 @@ export default function ChasideVocationalTest() {
                             {personalityDescriptions[type as PersonalityType]}
                           </p>
                         </div>
-                      ))}
+                        ))}
                     </div>
-                  </CardContent>
-                </Card>
+                </div>
 
                 {dominantType && (
-                  <>
-                    <Card className="bg-primary text-primary-foreground">
-                      <CardHeader className="py-4">
-                        <CardTitle className="text-xl font-bold">
-                          Tu tipo de personalidad dominante
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-xl font-bold mb-2">
-                          {dominantType} - {personalityMeanings[dominantType]}
-                        </p>
-                        <p className="text-sm">{personalityDescriptions[dominantType]}</p>
-                      </CardContent>
-                    </Card>
-                  </>
+                  <div className="bg-primary text-primary-foreground rounded-lg p-4">
+                    <h3 className="text-lg font-bold mb-2">
+                      Tu tipo de personalidad dominante
+                    </h3>
+                    <p className="text-base font-bold mb-1">
+                      {dominantType} - {personalityMeanings[dominantType]}
+                    </p>
+                    <p className="text-sm">{personalityDescriptions[dominantType]}</p>
+                  </div>
                 )}
               </motion.div>
             )}
           </AnimatePresence>
-        </CardContent>
-      </Card>
+      </div>
     </PageContainer>
   );
 }

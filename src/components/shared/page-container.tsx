@@ -26,7 +26,7 @@ export function PageContainer({
   icon,
 }: PageContainerProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-white to-primary/5 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="bg-gradient-to-br from-primary/5 via-white to-primary/5 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto py-6 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

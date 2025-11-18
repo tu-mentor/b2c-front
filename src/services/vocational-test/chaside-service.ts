@@ -11,10 +11,10 @@ export const chasideTestService = {
     }
   },
 
-  async getChasideTestByChildId(childId: string): Promise<ChasideTestResponseDto> {
+  async getChasideTestByUserId(userId: string): Promise<ChasideTestResponseDto> {
     try {
       const timestamp = Date.now();
-      const response = await api.get<ChasideTestResponseDto>(`/chaside-test/${childId}?t=${timestamp}`);
+      const response = await api.get<ChasideTestResponseDto>(`/chaside-test/${userId}?t=${timestamp}`);
       return response;
     } catch (error) {
       throw new Error("Failed to fetch Chaside test. Please try again.");

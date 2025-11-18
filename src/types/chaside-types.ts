@@ -11,7 +11,7 @@ export interface ScoresDto {
 }
 
 export interface CreateChasideTestDto {
-  childId: string;
+  userId: string;
   currentQuestion: number;
   scores: ScoresDto;
   careers: string[];
@@ -25,7 +25,7 @@ export interface UpdateChasideTestDto {
 
 export interface ChasideTestResponseDto {
   id: string;
-  childId: string;
+  userId: string;
   currentQuestion: number;
   scores: ScoresDto;
   careers: string[];

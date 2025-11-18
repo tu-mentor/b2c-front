@@ -1,4 +1,3 @@
-import { ChildModel } from "../../../../types/auth-types";
 import { Career } from "../career-costs/types_career";
 
 interface Child {
@@ -21,7 +20,7 @@ interface HollandScores {
 
 interface HollandResult {
   _id: string;
-  childId: string;
+  userId: string;
   currentQuestion: number;
   scores: HollandScores;
   careers: string[];
@@ -41,13 +40,13 @@ interface ChasideScores {
 
 interface ChasideResult {
   _id: string;
-  childId: string;
+  userId: string;
   currentQuestion: number;
   scores: ChasideScores;
   careers: string[];
 }
 
-interface ChildResult {
+interface UserResult {
   child: Child;
   hollandResult: HollandResult | null;
   chasideResult: ChasideResult | null;
@@ -58,8 +57,8 @@ interface TestResultsProps {
   chasideResult: ChasideResult | null;
 }
 
-interface ChildRowProps {
-  child: ChildModel
+interface UserRowProps {
+  child: Child
   hollandResult: HollandResult | null
   chasideResult: ChasideResult | null
   aiResultsAvailable: Record<string, boolean>
@@ -71,8 +70,8 @@ export type {
     ChasideResult,
     ChasideScores,
     Child,
-    ChildResult,
-    ChildRowProps,
+    UserResult,
+    UserRowProps,
     HollandResult,
     HollandScores,
     TestResultsProps

@@ -25,6 +25,21 @@ export const userService = {
     const response = await api.post<any>("/users/update-password", data);
     return response;
   },
+
+  async verifyEmail(email: string, verificationCode: string): Promise<{ message: string }> {
+    const response = await api.post<{ message: string }>("/auth/verify-email", {
+      email,
+      verificationCode,
+    });
+    return response;
+  },
+
+  async resendVerificationCode(email: string): Promise<{ message: string }> {
+    const response = await api.post<{ message: string }>("/auth/resend-verification-code", {
+      email,
+    });
+    return response;
+  },
 };
 
 export type { LoginResponse, UserModel };

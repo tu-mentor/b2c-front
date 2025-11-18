@@ -9,34 +9,33 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Tooltip } from "../shared/tooltip";
 import { Badge } from "../shared/badge";
 
-interface ChildSubscription {
-  childId: string;
-  subscriptions: {
-    subscriptionStatus: string;
-    subscriptionStartDate: string;
-    subscriptionEndDate: string;
-    subscriptionType: string;
-    remainingDays: number;
-    moduleId: string;
-  }[];
+interface Subscription {
+  subscriptionStatus: string;
+  subscriptionStartDate: string;
+  subscriptionEndDate: string;
+  subscriptionType: string;
+  remainingDays: number;
+  moduleId: string;
+}
+
+interface UserSubscription {
+  userId: string;
+  subscriptions: Subscription[];
 }
 
 interface UserData {
   firstName: string;
   lastName: string;
-  children: { id: string; childName: string }[];
 }
 
 interface WelcomeSectionProps {
-  subscription: ChildSubscription[] | null;
+  subscription: UserSubscription | null;
   userData: UserData;
-  selectedChildId: string;
 }
 
 export default function WelcomeSection({
   subscription,
   userData,
-  selectedChildId,
 }: WelcomeSectionProps) {
   const [mounted, setMounted] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -109,39 +108,6 @@ export default function WelcomeSection({
             </div>
           </motion.div>
 
-          {/* Alert Card for Multiple Children */}
-          {userData.children.length > 2 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Card className="relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 shadow-lg">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
-                <CardContent className="p-6 flex items-start space-x-4 relative z-10">
-                  <div className="flex-shrink-0 w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white flex items-center justify-center shadow-lg">
-                    <Star className="w-7 h-7 animate-pulse" />
-                  </div>
-                  <div className="flex-grow">
-                    <h3 className="text-xl font-bold mb-3 text-blue-800 dark:text-blue-200">
-                      ⚠️ Antes de iniciar: Selecciona el nombre del hijo
-                    </h3>
-                    <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">
-                      <span className="font-semibold text-blue-600 dark:text-blue-400">
-                        En la parte superior derecha de la plataforma encuentras la opción para
-                        seleccionar el nombre
-                      </span>{" "}
-                      de quien va a realizar las pruebas. Esto es indispensable ya que los resultados
-                      de las pruebas se asignan específicamente para cada hijo.
-                    </p>
-                  </div>
-                </CardContent>
-                <div className="absolute top-4 right-4 text-blue-500 animate-bounce">
-                  <ArrowUp className="w-8 h-8" />
-                </div>
-              </Card>
-            </motion.div>
-          )}
 
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -183,46 +149,48 @@ export default function WelcomeSection({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {userData.children.map((child) => {
-                            const childSubscription = subscription?.find(
-                              (sub) => sub.childId === child.id
-                            );
-                            const subscriptionInfo = childSubscription?.subscriptions[0];
-                            const moduleNames = subscriptionInfo
-                              ? modules
-                                  .filter((module) => module.identifier === subscriptionInfo.moduleId)
-                                  .map((module) => module.title)
-                                  .join(", ")
-                              : "N/A";
-                            const isActive = subscriptionInfo?.subscriptionStatus == "1" &&
-                              new Date(subscriptionInfo.subscriptionEndDate) > new Date();
+                          {subscription && subscription.subscriptions.length > 0 ? (
+                            subscription.subscriptions.map((sub, index) => {
+                              const moduleNames = modules
+                                .filter((module) => module.identifier === sub.moduleId)
+                                .map((module) => module.title)
+                                .join(", ") || "N/A";
+                              const isActive = sub.subscriptionStatus === "1" &&
+                                new Date(sub.subscriptionEndDate) > new Date();
 
-                            return (
-                              <TableRow key={child.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                <TableCell className="font-medium text-gray-800 dark:text-gray-200">{child.childName}</TableCell>
-                                <TableCell>
-                                  <Badge 
-                                    variant={isActive ? "default" : "destructive"}
-                                    className={isActive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}
-                                  >
-                                    {isActive ? "Activo" : "Inactivo"}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell>
-                                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    {subscriptionInfo
-                                      ? formatDate(subscriptionInfo.subscriptionEndDate)
-                                      : "N/A"}
-                                  </span>
-                                </TableCell>
-                                <TableCell>
-                                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                                    {moduleNames}
-                                  </span>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
+                              return (
+                                <TableRow key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                  <TableCell className="font-medium text-gray-800 dark:text-gray-200">
+                                    {userData.firstName} {userData.lastName}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge 
+                                      variant={isActive ? "default" : "destructive"}
+                                      className={isActive ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"}
+                                    >
+                                      {isActive ? "Activo" : "Inactivo"}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                                      {formatDate(sub.subscriptionEndDate)}
+                                    </span>
+                                  </TableCell>
+                                  <TableCell>
+                                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                                      {moduleNames}
+                                    </span>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center text-gray-500 dark:text-gray-400 py-8">
+                                No hay suscripciones activas
+                              </TableCell>
+                            </TableRow>
+                          )}
                         </TableBody>
                       </Table>
                     </div>
@@ -326,20 +294,17 @@ export default function WelcomeSection({
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {modules.map((module, index) => {
                   const isEnabled = subscription
-                    ? subscription.some(
-                        (childSub) =>
-                          childSub.childId === selectedChildId &&
-                          childSub.subscriptions.some(
-                            (sub) =>
-                              sub.moduleId === module.identifier.toString() &&
-                              sub.subscriptionStatus === "1"
-                          )
+                    ? subscription.subscriptions.some(
+                        (sub) =>
+                          sub.moduleId === module.identifier.toString() &&
+                          sub.subscriptionStatus === "1" &&
+                          new Date(sub.subscriptionEndDate) > new Date()
                       )
                     : false;
                   const subscriptionModule = subscription
-                    ? subscription
-                        .flatMap((childSub) => childSub.subscriptions)
-                        .find((sub) => sub.moduleId === module.identifier.toString())
+                    ? subscription.subscriptions.find(
+                        (sub) => sub.moduleId === module.identifier.toString()
+                      )
                     : undefined;
                   return (
                     <motion.div

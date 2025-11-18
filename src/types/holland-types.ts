@@ -8,7 +8,7 @@ export interface ScoresDto {
 }
 
 export interface CreateHollandtDto {
-  childId: string;
+  userId: string;
   currentQuestion: number;
   scores: ScoresDto;
   careers: string[];

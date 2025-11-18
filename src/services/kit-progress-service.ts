@@ -9,7 +9,7 @@ const extractCleanId = (id: string): string => {
 
 export const kitProgressService = {
   async updateProgress(
-    childId: string,
+    userId: string,
     progress?: {
       currentStep?: number,
       questions1Completed?: boolean;
@@ -18,23 +18,23 @@ export const kitProgressService = {
     }
   ): Promise<KitProgressModel> {
     // Limpiar el ID por si contiene parámetros adicionales
-    const cleanChildId = extractCleanId(childId);
-    console.log(`Actualizando progreso para childId: ${cleanChildId}`);
+    const cleanUserId = extractCleanId(userId);
+    console.log(`Actualizando progreso para userId: ${cleanUserId}`);
     
-    const response = await api.patch<KitProgressModel>(`/kit-progress/${cleanChildId}`, {
+    const response = await api.patch<KitProgressModel>(`/kit-progress/${cleanUserId}`, {
       ...progress,
     });
     return response;
   },
 
-  async getProgress(childId: string): Promise<KitProgressModel> {
+  async getProgress(userId: string): Promise<KitProgressModel> {
     // Limpiar el ID por si contiene parámetros adicionales
-    const cleanChildId = extractCleanId(childId);
-    console.log(`Obteniendo progreso para childId: ${cleanChildId}`);
+    const cleanUserId = extractCleanId(userId);
+    console.log(`Obteniendo progreso para userId: ${cleanUserId}`);
     
     // Añadir un parámetro de no-cache a la petición
     const timestamp = new Date().getTime();
-    const response = await api.get<KitProgressModel>(`/kit-progress/${cleanChildId}?nocache=${timestamp}`);
+    const response = await api.get<KitProgressModel>(`/kit-progress/${cleanUserId}?nocache=${timestamp}`);
     return response;
   },
 };

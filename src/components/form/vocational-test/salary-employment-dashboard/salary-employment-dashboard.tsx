@@ -29,7 +29,6 @@ import { PageContainer } from "@/components/shared/page-container";
 
 import { getUserId } from "../../../../services/auth-service";
 import { resultService } from "../../../../services/vocational-test/result-service";
-import { ChildResult } from "../types/results-types";
 import femaleData from "./salary-employment-data-f.json";
 import maleData from "./salary-employment-data-m.json";
 
@@ -85,7 +84,7 @@ export default function SalaryEmploymentDashboard({ gender, recomendedCarrers = 
   const [data, setData] = useState<YearData[]>([]);
   const [selectedYear, setSelectedYear] = useState<number>(2022);
   const [activeTab, setActiveTab] = useState<string>("distribution");
-  const [childrenResults, setChildrenResults] = useState<ChildResult[]>([]);
+  const [userResult, setUserResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [missingCareers, setMissingCareers] = useState<string[]>([]);
@@ -103,8 +102,8 @@ export default function SalaryEmploymentDashboard({ gender, recomendedCarrers = 
     const fetchResults = async () => {
       try {
         const response = await resultService.getResults(getUserId());
-        if (response && response.childrenResults && Array.isArray(response.childrenResults)) {
-          setChildrenResults(response.childrenResults);
+        if (response && response.userResult) {
+          setUserResult(response.userResult);
         } else {
           setError("Unexpected data format. Please try again later.");
         }

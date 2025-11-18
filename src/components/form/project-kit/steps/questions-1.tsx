@@ -1,60 +1,57 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, X } from "lucide-react";
-import { useState } from "react";
-import { childService } from "../../../../services/child-service";
-import { ChildModel } from "../../../../types/auth-types";
+import { BookOpen, Check, FileSpreadsheet, Globe, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../../../shared/alert";
 import { Button } from "../../../shared/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../shared/card";
 import { Label } from "../../../shared/label";
 import { RadioGroup, RadioGroupItem } from "../../../shared/radio-group";
 
-interface ChildQuestionsProps {
-  children: ChildModel[];
+interface Question {
+  id: string;
+  text: string;
+  icon: React.ElementType;
+}
+
+interface QuestionsProps {
+  userId: string;
   onComplete: (results: Record<string, Record<string, string>>) => void;
   initialAnswers: Record<string, Record<string, string>>;
 }
+
+const questions: Question[] = [
+  { id: "english", text: "¿Deseas Aprender y/o Mejorar tu Nivel de Inglés?", icon: Globe },
+  { id: "japanese", text: "¿Deseas Aprender y/o Mejorar tu Nivel de Japonés?", icon: BookOpen },
+  { id: "excel", text: "¿Deseas Aprender y/o Mejorar tu Nivel de Excel?", icon: FileSpreadsheet },
+];
 
 const options = [
   { value: "1", label: "Sí", icon: Check },
   { value: "0", label: "No", icon: X },
 ];
 
-export function ChildQuestions2({ children, onComplete, initialAnswers }: ChildQuestionsProps) {
-  const [answers, setAnswers] = useState<Record<string, Record<string, string>>>(initialAnswers);
+export function Questions1({ userId, onComplete, initialAnswers }: QuestionsProps) {
+  const [answers, setAnswers] = useState<Record<string, string>>(initialAnswers[userId] || {});
   const [error, setError] = useState<string | null>(null);
 
-  const handleAnswerChange = (childId: string, questionId: string, value: string) => {
+  useEffect(() => {
+    setAnswers(initialAnswers[userId] || {});
+  }, [initialAnswers, userId]);
+
+  const handleAnswerChange = (questionId: string, value: string) => {
     setAnswers((prev) => ({
       ...prev,
-      [childId]: {
-        ...prev[childId],
-        [questionId]: value,
-      },
+      [questionId]: value,
     }));
   };
 
   const handleSubmit = async () => {
-    const allQuestionsAnswered = children.every(
-      (child) => Object.keys(answers[child.id] || {}).length === 1
-    );
+    const allQuestionsAnswered = questions.every((question) => answers[question.id]);
 
     if (allQuestionsAnswered) {
       setError(null);
-
-      try {
-        // Call the updateChildKit service for each child
-        for (const child of children) {
-          const childAnswers = answers[child.id];
-          await childService.updateChildKit(child.id, {
-            financeCareer: childAnswers["financeCareer"] === "1",
-          });
-        }
-
-        onComplete(answers);
-      } catch (error) {
-        setError("Hubo un error al guardar las respuestas. Por favor, inténtalo de nuevo.");
-      }
+      // Los datos se guardan a través del kit-progress
+      onComplete({ [userId]: answers });
     } else {
       setError("Por favor, contesta todas las preguntas para continuar.");
     }
@@ -63,9 +60,7 @@ export function ChildQuestions2({ children, onComplete, initialAnswers }: ChildQ
   return (
     <Card className="w-full max-w-3xl mx-auto mt-4">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl font-bold text-center">
-          Financiamiento Universitario
-        </CardTitle>
+        <CardTitle className="text-xl font-bold text-center">Evaluación de Intereses</CardTitle>
       </CardHeader>
       <CardContent>
         <motion.p
@@ -74,37 +69,39 @@ export function ChildQuestions2({ children, onComplete, initialAnswers }: ChildQ
           transition={{ duration: 0.5 }}
           className="mb-4 text-center text-sm"
         >
-          Por favor, responde la siguiente pregunta para cada niño.
+          Gracias por completar el primer paso. Por favor contesta las siguientes preguntas para
+          continuar.
         </motion.p>
         <AnimatePresence>
-          {children.map((child) => (
-            <motion.div
-              key={child.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6"
-            >
-              <h3 className="text-lg font-semibold mb-3">{child.childName}</h3>
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm">¿Deseas - Necesitas financiar tu carrera universitaria?</p>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6"
+          >
+            {questions.map((question) => (
+              <div key={question.id} className="mb-3 flex items-center justify-between">
+                <div className="flex items-center space-x-2 flex-grow">
+                  <question.icon className="w-5 h-5 text-primary" />
+                  <p className="text-sm">{question.text}</p>
+                </div>
                 <RadioGroup
-                  onValueChange={(value) => handleAnswerChange(child.id, "financeCareer", value)}
-                  value={answers[child.id]?.["financeCareer"] || ""}
+                  onValueChange={(value) => handleAnswerChange(question.id, value)}
+                  value={answers[question.id] || ""}
                   className="flex space-x-2"
                 >
                   {options.map((option) => (
                     <div key={option.value} className="flex items-center">
                       <RadioGroupItem
                         value={option.value}
-                        id={`${child.id}-${option.value}`}
+                        id={`${userId}-${question.id}-${option.value}`}
                         className="sr-only"
                       />
                       <Label
-                        htmlFor={`${child.id}-${option.value}`}
+                        htmlFor={`${userId}-${question.id}-${option.value}`}
                         className={`flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-all duration-200 ${
-                          answers[child.id]?.["financeCareer"] === option.value
+                          answers[question.id] === option.value
                             ? "bg-primary text-primary-foreground"
                             : "bg-secondary hover:bg-secondary/80"
                         }`}
@@ -115,8 +112,8 @@ export function ChildQuestions2({ children, onComplete, initialAnswers }: ChildQ
                   ))}
                 </RadioGroup>
               </div>
-            </motion.div>
-          ))}
+            ))}
+          </motion.div>
         </AnimatePresence>
         <AnimatePresence>
           {error && (
@@ -146,3 +143,4 @@ export function ChildQuestions2({ children, onComplete, initialAnswers }: ChildQ
     </Card>
   );
 }
+

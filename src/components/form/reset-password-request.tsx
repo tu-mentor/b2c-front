@@ -74,13 +74,13 @@ export default function PasswordResetForm({ onFlip }: PasswordResetFormProps) {
                   {errors.whatsapp && <p className="text-red-500 text-sm mt-1">{errors.whatsapp.message}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="childName">Nombre de uno de sus hijos registrado en la plataforma</Label>
+                  <Label htmlFor="childName">Tu nombre registrado en la plataforma</Label>
                   <Input
                     id="childName"
                     type="text"
-                    placeholder="Ingrese el nombre de uno de sus hijos"
+                    placeholder="Ingrese tu nombre"
                     {...register("childName", {
-                      required: "El nombre de uno de sus hijos es requerido",
+                      required: "Tu nombre es requerido",
                     })}
                     className={errors.childName ? "border-red-500" : ""}
                   />

@@ -10,7 +10,7 @@ enum SubscriptionType {
   BTB = "1",
 }
 
-interface Subscription {
+export interface Subscription {
   subscriptionStatus: SubscriptionStatus;
   subscriptionStartDate: string;
   subscriptionEndDate: string;
@@ -21,6 +21,11 @@ interface Subscription {
 
 export interface ChildSubscription {
   childId: string;
+  subscriptions: Subscription[];
+}
+
+export interface UserSubscription {
+  userId: string;
   subscriptions: Subscription[];
 }
 

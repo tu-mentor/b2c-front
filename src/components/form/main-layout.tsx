@@ -16,7 +16,6 @@ import {
   Rocket,
   Sun,
   User,
-  UserCheck,
   UserCheck2,
   UserCircle,
   UserPlus,
@@ -36,19 +35,9 @@ import { getUserId, getUserInfo, isAuthenticated, logout } from "../../services/
 import { suscriptionService } from "../../services/suscription-service";
 import { userService } from "../../services/user-service";
 import { vocationalService } from "../../services/vocational-service";
-import type { ChildModel, UserModel } from "../../types/auth-types";
-import type { ChildSubscription } from "../../types/suscriptions";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "../shared/alert-dialog";
+import type { UserModel } from "../../types/auth-types";
+import type { ChildSubscription, UserSubscription } from "../../types/suscriptions";
 import { Button } from "../shared/button";
-import { ChildSelector } from "../shared/child-selector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -130,8 +119,8 @@ const initialMenuItems: MenuItem[] = [
   },
 ];
 
-async function getCareers(userId: string, childId: string): Promise<string[]> {
-  const response = await vocationalService.getCareers(userId, childId);
+async function getCareers(userId: string): Promise<string[]> {
+  const response = await vocationalService.getCareers(userId);
   return response;
 }
 
@@ -160,29 +149,18 @@ const subMenuItemVariants = {
 
 export default function MainLayout() {
   const navigate = useNavigate();
-  type Gender = 0 | 1;
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [user, setUser] = useState<UserModel | null>(null);
-  const [selectedChild, setSelectedChild] = useState<string | null>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [showReminder, setShowReminder] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const [children, setChildren] = useState<ChildModel[]>([]);
-  const [selectedChildGender, setSelectedChildGender] = useState<Gender>(0);
   const [recommendedCareers, setRecommendedCareers] = useState<string[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
-  const [userSubscription, setUserSubscription] = useState<ChildSubscription[] | null>(null);
-  const [showChildSelectionModal, setShowChildSelectionModal] = useState(false);
+  const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
 
-  // Memoización de funciones
-  const convertGender = useCallback((gender: string | undefined): Gender => {
-    if (gender === "male" || gender === "Male" || gender === "1") return 1;
-    return 0;
-  }, []);
 
   const handleLogout = useCallback(() => {
     logout();
@@ -207,22 +185,12 @@ export default function MainLayout() {
         const userInfo = await getUserInfo(userId);
         if (userInfo) {
           setUser(userInfo.user);
-          setChildren(userInfo.user.children || []);
-          setSelectedChild(userInfo.user.selectedChildren || null);
-          setShowReminder(userInfo.user.showAlertMessage);
-
-          if (userInfo.user.selectedChildren) {
-            const selectedChildData = userInfo.user.children.find(
-              (child) => child.id === userInfo.user.selectedChildren
-            );
-            setSelectedChildGender(convertGender(selectedChildData?.gender));
-          }
 
           const subscriptions = await suscriptionService.getUserSuscription(userId);
           setUserSubscription(subscriptions);
 
-          if (userInfo.user.selectedChildren) {
-            updateMenuItems(subscriptions, userInfo.user.selectedChildren);
+          if (subscriptions) {
+            updateMenuItems(subscriptions);
           }
         }
       } catch (error) {
@@ -232,17 +200,16 @@ export default function MainLayout() {
     };
 
     initializeApp();
-  }, [navigate, convertGender]);
+  }, [navigate]);
 
   // Memoización de la función updateMenuItems
-  const updateMenuItems = useCallback((subscriptions: ChildSubscription[], childId: string) => {
-    const childSubscription = subscriptions.find((sub) => sub.childId === childId);
+  const updateMenuItems = useCallback((subscriptions: UserSubscription) => {
     const currentDate = new Date();
 
     const updatedMenuItems = initialMenuItems.map((item) => {
       const isEnabled =
         item.identifier === "0" ||
-        (childSubscription?.subscriptions.some(
+        (subscriptions?.subscriptions.some(
           (sub) =>
             sub.moduleId === item.identifier &&
             sub.subscriptionStatus === "1" &&
@@ -327,16 +294,14 @@ export default function MainLayout() {
               userData={{
                 firstName: user?.firstName || "",
                 lastName: user?.lastName || "",
-                children: user?.children || [],
               }}
-              selectedChildId={selectedChild || ""}
             />
           </Suspense>
         );
       case "instructions":
         return (
           <Suspense fallback={<div>Cargando...</div>}>
-            <InstructionsVocationalTest totalChildren={user?.children?.length || 0} />
+            <InstructionsVocationalTest totalChildren={1} />
           </Suspense>
         );
       case "holland":
@@ -356,9 +321,8 @@ export default function MainLayout() {
           <Suspense fallback={<div>Cargando...</div>}>
             <Results
               key={`results-${Date.now()}`}
-              children={user?.children || []}
-              subscriptions={userSubscription || []}
-              selectedChildId={selectedChild || ""}
+              userId={user?.id || ""}
+              subscriptions={userSubscription?.subscriptions || []}
             />
           </Suspense>
         );
@@ -368,7 +332,6 @@ export default function MainLayout() {
             <UserProfile
               userData={{
                 ...user,
-                selectedChildren: selectedChild || "",
               }}
             />
           </Suspense>
@@ -385,7 +348,7 @@ export default function MainLayout() {
           </div>
         );
     }
-  }, [activeSection, user, userSubscription, selectedChild]);
+  }, [activeSection, user, userSubscription]);
 
   const getFirstEnabledMenuItem = (items: MenuItem[]): string => {
     for (const item of items) {
@@ -428,64 +391,9 @@ export default function MainLayout() {
     }
   }, []);
 
-  const handleSelectChild = async (childId: string) => {
-    setSelectedChild(childId);
-    if (user) {
-      try {
-        const updatedUser = await userService.updateUser(user.id, {
-          selectedChildren: childId,
-          showAlertMessage: false,
-        });
-        setUser((prevUser) => ({
-          ...prevUser!,
-          selectedChildren: childId,
-          showAlertMessage: false,
-        }));
 
-        const selectedChildData = user.children.find((child) => child.id === childId);
-        setSelectedChildGender(convertGender(selectedChildData?.gender));
 
-        const careers = await getCareers(user.id, childId);
-        setRecommendedCareers(careers);
-
-        // Update menu items based on the selected child's subscriptions
-        if (userSubscription) {
-          const updatedMenuItems = updateMenuItems(userSubscription, childId);
-          const firstEnabledMenuItem = getFirstEnabledMenuItem(updatedMenuItems);
-          setActiveSection(firstEnabledMenuItem);
-          if (firstEnabledMenuItem === "vocationalGuidance") {
-            setOpenSubmenu("vocationalGuidance");
-          } else {
-            setOpenSubmenu(null);
-          }
-        }
-      } catch (error) {
-        console.error("Error updating selected child:", error);
-      }
-    }
-  };
-
-  const handleReminderClose = async () => {
-    setShowReminder(false);
-    try {
-      getUserInfo(getUserId()).then((userInfo) => {
-        userInfo!.user.showAlertMessage = false;
-        userService.updateUser(userInfo!.user.id, {
-          showAlertMessage: false,
-          selectedChildren: selectedChild,
-        });
-        setUser((prevUser) => (prevUser ? { ...prevUser, showAlertMessage: false } : null));
-      });
-    } catch (error) {
-      console.error("Error updating reminder status:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (user && !selectedChild) {
-      setShowChildSelectionModal(true);
-    }
-  }, [user, selectedChild]);
+  // Ya no es necesario mostrar modal de selección de hijo, ahora solo hay un usuario
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -754,44 +662,6 @@ export default function MainLayout() {
               </motion.h1>
             </div>
             <div className="flex items-center space-x-4">
-              {user && user.children && user.children.length > 1 && (
-                <div className="flex items-center space-x-2 text-primary">
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      rotate: [0, 10, -10, 0],
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatType: "loop",
-                    }}
-                  >
-                    <UserCheck className="h-6 w-6 text-primary" />
-                  </motion.div>
-                  <span className="font-medium">Hijo seleccionado</span>
-                </div>
-              )}
-              <div className="relative">
-                <ChildSelector
-                  children={user?.children || []}
-                  onSelectChild={handleSelectChild}
-                  selectedChildId={selectedChild}
-                  className="bg-primary text-white font-bold py-2 px-4 rounded-full hover:bg-primary/90 transition-colors duration-300"
-                />
-                {!selectedChild && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      repeat: Number.POSITIVE_INFINITY,
-                      duration: 1.5,
-                      repeatType: "reverse",
-                    }}
-                    className="absolute -top-2 -right-2 w-4 h-4 bg-red-500 rounded-full"
-                  />
-                )}
-              </div>
               <Button
                 variant="ghost"
                 size="icon"
@@ -809,7 +679,7 @@ export default function MainLayout() {
           <main className="flex-1 overflow-x-hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
             <AnimatePresence mode="wait">
               <motion.div
-                key={activeSection + selectedChild}
+                key={activeSection}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -870,35 +740,6 @@ export default function MainLayout() {
           </footer>
         </motion.div>
       </div>
-
-      <AlertDialog
-        open={showReminder && (user?.children?.length ?? 0) > 1}
-        onOpenChange={setShowReminder}
-      >
-        <AlertDialogContent className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-primary text-xl font-bold">
-              Recordatorio Importante
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-lg text-primary/70 dark:text-primary/70">
-              Todas las acciones que realices en la plataforma se registrarán para el hijo
-              seleccionado. Por favor, asegúrate de que has{" "}
-              <span className="text-primary font-medium">
-                seleccionado al hijo correcto en la parte superior derecha de la pantalla.
-              </span>
-              <b className="block mt-2 text-primary">Recuerda cambiar la contraseña temporal en la sección Perfil - Mi Cuenta.</b>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction 
-              onClick={handleReminderClose}
-              className="bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-300"
-            >
-              Entendido
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

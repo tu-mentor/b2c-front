@@ -25,8 +25,6 @@ interface UserData {
   id: string;
   firstName: string;
   lastName: string;
-  selectedChildren: string;
-  children: { id: string; childName: string }[];
 }
 
 interface PasswordChangeForm {
@@ -102,7 +100,7 @@ export default function UserProfile({ userData }: { userData: UserData }) {
 
   useEffect(() => {
     reset();
-  }, [userData.selectedChildren, reset]);
+  }, [userData.id, reset]);
 
   return (
     <motion.div

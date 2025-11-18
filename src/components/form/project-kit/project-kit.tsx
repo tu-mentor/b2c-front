@@ -4,13 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, ArrowRight, Award, Book, Briefcase, Rocket, Star, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { kitProgressService } from "../../../services/kit-progress-service";
-import type { ChildModel } from "../../../types/auth-types";
 import { Alert, AlertDescription, AlertTitle } from "../../shared/alert";
 import { Button } from "../../shared/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../shared/card";
-import { ChildQuestions1 } from "./steps/child-questions-1";
-import { ChildQuestions2 } from "./steps/child-questions-2";
-import { ChildQuestions3 } from "./steps/child-questions-3";
+import { Questions1 } from "./steps/questions-1";
+import { Questions2 } from "./steps/questions-2";
+import { Questions3 } from "./steps/questions-3";
 import FirstStep from "./steps/step_1";
 import SecondStep from "./steps/step_2";
 import ThirdStep from "./steps/step_3";
@@ -65,13 +64,11 @@ const logDev = (message: string, ...args: any[]) => {
 };
 
 export default function ProjectKit({
-  children,
-  selectedChildId,
+  userId,
   forceRefresh,
   onClose,
 }: {
-  children: ChildModel[];
-  selectedChildId: string;
+  userId: string;
   forceRefresh?: number; // Número que cambia para forzar actualización
   onClose?: () => void; // Función para cerrar el popup
 }) {
@@ -92,7 +89,7 @@ export default function ProjectKit({
 
   const validateProgress = async () => {
     try {
-      const fetchedProgress = await kitProgressService.getProgress(selectedChildId);
+      const fetchedProgress = await kitProgressService.getProgress(userId);
       // logDev en vez de console.log
       logDev("Progreso actualizado desde API (validateProgress):", fetchedProgress);
 
@@ -136,7 +133,7 @@ export default function ProjectKit({
         const timestamp = new Date().getTime();
         logDev("Obteniendo datos frescos desde API con timestamp:", timestamp);
 
-        const fetchedProgress = await kitProgressService.getProgress(`${selectedChildId}?t=${timestamp}`);
+        const fetchedProgress = await kitProgressService.getProgress(`${userId}?t=${timestamp}`);
         logDev("Progreso cargado desde API (montaje inicial):", fetchedProgress);
 
         // Actualizar el estado de progreso
@@ -174,7 +171,7 @@ export default function ProjectKit({
         questions3Completed: false,
       });
     };
-  }, [selectedChildId, forceRefresh]); // Dependencias: selectedChildId y forceRefresh
+  }, [userId, forceRefresh]); // Dependencias: userId y forceRefresh
 
   const startKit = async () => {
     try {
@@ -182,7 +179,7 @@ export default function ProjectKit({
       const timestamp = new Date().getTime();
 
       // Actualizar en el backend preservando el estado de cuestionarios
-      await kitProgressService.updateProgress(`${selectedChildId}?t=${timestamp}`, {
+      await kitProgressService.updateProgress(`${userId}?t=${timestamp}`, {
         currentStep: 0,
         // Preservar el estado de los cuestionarios o establecerlos a true si no existen
         questions1Completed: progress.questions1Completed || true,
@@ -283,7 +280,7 @@ export default function ProjectKit({
       }
 
       // Actualizar en el backend
-      await kitProgressService.updateProgress(selectedChildId, {
+      await kitProgressService.updateProgress(userId, {
         currentStep: newStep,
         // Preservar el estado de los cuestionarios
         questions1Completed: progress.questions1Completed,
@@ -312,7 +309,7 @@ export default function ProjectKit({
       setShowingQuestionnaire(null);
 
       // Actualizar en el backend
-      await kitProgressService.updateProgress(selectedChildId, {
+      await kitProgressService.updateProgress(userId, {
         currentStep: newStep,
         // Preservar el estado de los cuestionarios
         questions1Completed: progress.questions1Completed,
@@ -333,12 +330,12 @@ export default function ProjectKit({
 
   const handleQuestions1Complete = async (results: Record<string, Record<string, string>>) => {
     setQuestionResults1(results);
-    const selectedChildAnswers = results[selectedChildId] || {};
-    const allQuestionsAnswered = Object.keys(selectedChildAnswers).length === 3;
+    const userAnswers = results[userId] || {};
+    const allQuestionsAnswered = Object.keys(userAnswers).length === 3;
     if (allQuestionsAnswered) {
       try {
         // Actualizar en el backend que se completó el cuestionario Y avanzar al paso 2
-        await kitProgressService.updateProgress(selectedChildId, {
+        await kitProgressService.updateProgress(userId, {
           questions1Completed: true,
           currentStep: 1, // Avanzar al paso 2 (Carrera Universitaria)
         });
@@ -361,12 +358,12 @@ export default function ProjectKit({
 
   const handleQuestions2Complete = async (results: Record<string, Record<string, string>>) => {
     setQuestionResults2(results);
-    const selectedChildAnswers = results[selectedChildId] || {};
-    const allQuestionsAnswered = Object.keys(selectedChildAnswers).length === 1;
+    const userAnswers = results[userId] || {};
+    const allQuestionsAnswered = Object.keys(userAnswers).length === 1;
     if (allQuestionsAnswered) {
       try {
         // Actualizar en el backend que se completó el cuestionario Y avanzar al paso 3
-        await kitProgressService.updateProgress(selectedChildId, {
+        await kitProgressService.updateProgress(userId, {
           questions2Completed: true,
           currentStep: 2, // Avanzar al paso 3 (Marca Personal)
         });
@@ -389,12 +386,12 @@ export default function ProjectKit({
 
   const handleQuestions3Complete = async (results: Record<string, Record<string, string>>) => {
     setQuestionResults3(results);
-    const selectedChildAnswers = results[selectedChildId] || {};
-    const allQuestionsAnswered = Object.keys(selectedChildAnswers).length === 3;
+    const userAnswers = results[userId] || {};
+    const allQuestionsAnswered = Object.keys(userAnswers).length === 3;
     if (allQuestionsAnswered) {
       try {
         // Actualizar en el backend que se completó el cuestionario Y avanzar al paso 5
-        await kitProgressService.updateProgress(selectedChildId, {
+        await kitProgressService.updateProgress(userId, {
           questions3Completed: true,
           currentStep: 5, // Avanzar al paso 5 (Emprendimiento Juvenil)
         });
@@ -426,8 +423,8 @@ export default function ProjectKit({
             Para personalizar mejor tu experiencia en el paso de Carrera Universitaria, necesitamos conocer tus
             intereses y preferencias. Por favor completa este breve cuestionario.
           </p>
-          <ChildQuestions1
-            children={children.filter((child) => child.id === selectedChildId)}
+          <Questions1
+            userId={userId}
             onComplete={handleQuestions1Complete}
             initialAnswers={questionResults1}
           />
@@ -450,8 +447,8 @@ export default function ProjectKit({
             Antes de avanzar a la construcción de tu Marca Personal, es importante identificar tus fortalezas y
             habilidades. Este cuestionario nos ayudará a orientarte mejor.
           </p>
-          <ChildQuestions2
-            children={children.filter((child) => child.id === selectedChildId)}
+          <Questions2
+            userId={userId}
             onComplete={handleQuestions2Complete}
             initialAnswers={questionResults2}
           />
@@ -474,8 +471,8 @@ export default function ProjectKit({
             Antes de explorar el mundo del Emprendimiento Juvenil, queremos entender tu perfil emprendedor y
             motivaciones. Este cuestionario nos permitirá ofrecerte recomendaciones más relevantes.
           </p>
-          <ChildQuestions3
-            children={children.filter((child) => child.id === selectedChildId)}
+          <Questions3
+            userId={userId}
             onComplete={handleQuestions3Complete}
             initialAnswers={questionResults3}
           />
@@ -532,7 +529,7 @@ export default function ProjectKit({
                     onClick={async () => {
                       try {
                         // Actualizar en el backend asegurando que todos los cuestionarios permanezcan completados
-                        await kitProgressService.updateProgress(selectedChildId, {
+                        await kitProgressService.updateProgress(userId, {
                           currentStep: 0,
                           // Forzar que todos los cuestionarios se mantengan completados
                           questions1Completed: true,
@@ -635,7 +632,7 @@ export default function ProjectKit({
                     if (index < 5 || progress.questions3Completed) {
                       try {
                         // Actualizar en el backend
-                        await kitProgressService.updateProgress(selectedChildId, {
+                        await kitProgressService.updateProgress(userId, {
                           currentStep: index,
                           // Preservar el estado de cuestionarios completados
                           questions1Completed: progress.questions1Completed,

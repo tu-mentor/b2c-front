@@ -1,15 +1,6 @@
 export interface LoginCredentials {
-  whatsapp: string;
+  email: string;
   password: string;
-}
-
-export interface ChildModel {
-  id: string;
-  childName: string;
-  school: string;
-  gender: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface UserModel {
@@ -18,13 +9,10 @@ export interface UserModel {
   lastName: string;
   whatsapp: string;
   email: string;
+  password: string;
   countryCode: string;
-  educationLevel: string;
   acceptTerms: boolean;
-  numberOfChildren: number;
   showAlertMessage: boolean;
-  selectedChildren: string;
-  children: ChildModel[];
   status: string;
   companyId?: string;
   createdAt: Date;
