@@ -76,7 +76,7 @@ export default function SalaryDataVisualization({ careers, gender }: SalaryDataV
   const noResults = availableCareers.length === 0;
 
   return (
-    <div className="container mx-auto p-2 sm:p-4">
+    <div className="container mx-auto p-2 sm:p-4 overflow-x-hidden">
       <motion.h1
         className="text-3xl sm:text-4xl font-bold mb-4 sm:mb-6 text-center text-gray-500"
         initial={{ opacity: 0, y: -50 }}
@@ -168,7 +168,7 @@ export default function SalaryDataVisualization({ careers, gender }: SalaryDataV
                                         </div>
                                       </div>
                                     </TooltipTrigger>
-                                    <TooltipContent>
+                                    <TooltipContent side="top" align="center" className="max-w-xs">
                                       <p>
                                         Graduados contratados en este rango salarial:{" "}
                                         {formatNumber(range.total)}

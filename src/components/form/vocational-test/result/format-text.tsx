@@ -22,9 +22,7 @@ export default function TextFormatter({ text }: TextFormatterProps) {
                   return <hr key={i} className="my-4 border-t border-gray-200" />;
                 }
 
-                const formattedLine = line.replace(/\*\*(.*?)\*\*/g, (text) => {
-                  return `<strong>${text}</strong>`;
-                });
+                const formattedLine = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
                 return (
                   <p

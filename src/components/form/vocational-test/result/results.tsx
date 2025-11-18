@@ -17,7 +17,6 @@ import {
 import type React from "react";
 import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react";
 import { createPortal } from "react-dom";
-import { Radar } from "react-chartjs-2";
 import { getUserId, getUserInfo } from "../../../../services/auth-service";
 import { vocationalService } from "../../../../services/vocational-service";
 import { resultService } from "../../../../services/vocational-test/result-service";
@@ -40,7 +39,6 @@ import { Input } from "../../../shared/input";
 import { LoadingCard } from "../../../shared/loading/loading-card";
 import { Popover, PopoverContent, PopoverTrigger } from "../../../shared/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../shared/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../shared/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../../../shared/tooltip";
 import ProjectKit from "../../project-kit/project-kit";
 import CareerComparison from "../career-costs/career-comparison";
@@ -53,182 +51,14 @@ import type {
   UserResult,
   UserRowProps,
   HollandScores,
-  TestResultsProps,
 } from "../types/results-types";
 import TextFormatter from "./format-text";
-import {
-  chasideColors,
-  chasideDescriptions,
-  chasideLabels,
-  hollandColors,
-  hollandDescriptions,
-  hollandLabels,
-} from "./results-constants";
 import AIThinkingOverlay from "./AIThinkingOverlay";
 import { PageContainer } from "../../../shared/page-container";
 import { Career } from "../career-costs/types_career";
 
 const HOLLAND_QUESTIONS = hollandQuestions.length;
 const CHASIDE_QUESTIONS = chasideQuestions.length;
-
-const TestResults: React.FC<TestResultsProps> = ({ hollandResult, chasideResult }) => {
-  const hollandData = {
-    labels: Object.values(hollandLabels),
-    datasets: [
-      {
-        label: "Puntuaciones Holland",
-        data: hollandResult ? Object.values(hollandResult.scores) : [],
-        backgroundColor: Object.values(hollandColors),
-        borderColor: "rgba(255, 255, 255, 0.3)",
-        borderWidth: 2,
-      },
-    ],
-  };
-
-  const chasideData = {
-    labels: Object.values(chasideLabels),
-    datasets: [
-      {
-        label: "Puntuaciones CHASIDE",
-        data: chasideResult ? Object.values(chasideResult.scores) : [],
-        backgroundColor: Object.values(chasideColors),
-        borderColor: "rgba(255, 255, 255, 0.3)",
-        borderWidth: 2,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    scales: {
-      r: {
-        beginAtZero: true,
-        ticks: {
-          stepSize: 5,
-        },
-        pointLabels: {
-          font: {
-            size: 9,
-          },
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        callbacks: {
-          label: (context: any) => {
-            let label = context.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed.r !== null) {
-              label += context.parsed.r;
-            }
-            return label;
-          },
-        },
-      },
-    },
-    maintainAspectRatio: false,
-  };
-
-  return (
-    <Tabs defaultValue="holland" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-2">
-        <TabsTrigger value="holland" className="text-sm">
-          Prueba Holland
-        </TabsTrigger>
-        <TabsTrigger value="chaside" className="text-sm">
-          Prueba CHASIDE
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value="holland" className="mt-0">
-        {hollandResult ? (
-          <motion.div
-            className="space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="w-full h-[180px]">
-              <Radar data={hollandData} options={chartOptions} />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-              {Object.entries(hollandResult.scores).map(([key, value]) => (
-                <motion.div
-                  key={key}
-                  className="flex items-center justify-between p-1.5 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <span className="text-sm font-medium">{hollandLabels[key as keyof HollandScores]}</span>
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm font-bold">{value}</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-3 w-3 text-muted-foreground cursor-pointer" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">{hollandDescriptions[key as keyof HollandScores]}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          <p className="text-center py-4 text-sm">No hay resultados disponibles para la prueba Holland.</p>
-        )}
-      </TabsContent>
-      <TabsContent value="chaside" className="mt-0">
-        {chasideResult ? (
-          <motion.div
-            className="space-y-2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="w-full h-[180px]">
-              <Radar data={chasideData} options={chartOptions} />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-              {Object.entries(chasideResult.scores).map(([key, value]) => (
-                <motion.div
-                  key={key}
-                  className="flex items-center justify-between p-1.5 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <span className="text-sm font-medium">{chasideLabels[key as keyof ChasideScores]}</span>
-                  <div className="flex items-center space-x-1">
-                    <span className="text-sm font-bold">{value}</span>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Info className="h-3 w-3 text-muted-foreground cursor-pointer" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">{chasideDescriptions[key as keyof ChasideScores]}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          <p className="text-center py-4 text-sm">No hay resultados disponibles para la prueba CHASIDE.</p>
-        )}
-      </TabsContent>
-    </Tabs>
-  );
-};
 
 const UserRow = memo(
   ({ userId, hollandResult, chasideResult, aiResultsAvailable, setAiResultsAvailable, handleViewCareerComparison }: {
@@ -322,9 +152,12 @@ const UserRow = memo(
       console.log(`[Frontend] Iniciando procesamiento de resultados para usuario ${userId}`);
       const startTime = Date.now();
       
+      // Asegurar que el diálogo esté abierto
+      setIsDialogOpen(true);
       setIsAIThinking(true);
       setIsLoading(true);
       setDisplayedResponse("");
+      setAiResponse(""); // Limpiar respuesta anterior
       setProgress(0);
       setProgressMessage("🤖 Iniciando análisis...");
 
@@ -350,19 +183,24 @@ const UserRow = memo(
         // Esperar un momento para que el usuario vea el 100% antes de ocultar
         setTimeout(() => {
           if (finalResult && !isError) {
+            // Establecer la respuesta y reiniciar displayedResponse para el efecto de escritura
             setAiResponse(finalResult.result);
+            setDisplayedResponse(""); // Reiniciar para que el efecto de escritura funcione
+            setExistingResults(false); // Asegurar que se muestre el efecto de escritura
             setAiResultsAvailable(true);
             vocationalService.getCareers(userId).then(updatedCareers => {
               setRecommendedCareers(updatedCareers);
             });
           } else if (isError) {
-            setAiResponse("Lo siento, hubo un error al procesar los resultados. Por favor, inténtalo de nuevo más tarde.");
-            setDisplayedResponse(
-              "Lo siento, hubo un error al procesar los resultados. Por favor, inténtalo de nuevo más tarde.",
-            );
+            const errorMessage = "Lo siento, hubo un error al procesar los resultados. Por favor, inténtalo de nuevo más tarde.";
+            setAiResponse(errorMessage);
+            setDisplayedResponse(""); // Reiniciar para el efecto de escritura
+            setExistingResults(false);
           } else {
-            setAiResponse("Lo siento, no se encontraron resultados.");
-            setDisplayedResponse("Lo siento, no se encontraron resultados.");
+            const noResultsMessage = "Lo siento, no se encontraron resultados.";
+            setAiResponse(noResultsMessage);
+            setDisplayedResponse(""); // Reiniciar para el efecto de escritura
+            setExistingResults(false);
           }
           
           setIsAIThinking(false);
@@ -477,24 +315,49 @@ const UserRow = memo(
     }, [userId, setAiResultsAvailable]);
 
     useEffect(() => {
-      if (!aiResponse || !isDialogOpen) return;
+      if (!aiResponse || !isDialogOpen) {
+        // Si el diálogo se cierra o no hay respuesta, limpiar el texto mostrado
+        if (!isDialogOpen) {
+          setDisplayedResponse("");
+        }
+        return;
+      }
 
       if (existingResults) {
+        // Si son resultados existentes, mostrar todo de una vez
         setDisplayedResponse(aiResponse);
         return;
       }
 
-      let index = 0;
-      const intervalId = setInterval(() => {
-        if (index < aiResponse.length) {
-          setDisplayedResponse((prev) => prev + aiResponse[index]);
-          index++;
-        } else {
+      // Reiniciar displayedResponse para el efecto de escritura
+      setDisplayedResponse("");
+      
+      // Pequeño delay para asegurar que el overlay se haya cerrado
+      let intervalId: NodeJS.Timeout | null = null;
+      const timeoutId = setTimeout(() => {
+        // Efecto de escritura tipo máquina
+        let index = 0;
+        intervalId = setInterval(() => {
+          if (index < aiResponse.length) {
+            // Usar substring para construir el texto progresivamente
+            setDisplayedResponse(aiResponse.substring(0, index + 1));
+            index++;
+          } else {
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = null;
+            }
+          }
+        }, 2); // Velocidad de escritura
+      }, 100); // Pequeño delay para asegurar que el overlay se haya cerrado
+
+      // Cleanup function
+      return () => {
+        clearTimeout(timeoutId);
+        if (intervalId) {
           clearInterval(intervalId);
         }
-      }, 2); // Reducido de 5ms a 2ms para animación más rápida
-
-      return () => clearInterval(intervalId);
+      };
     }, [aiResponse, isDialogOpen, existingResults]);
 
     const showInfoDialog = (title: string, message: string) => {
@@ -581,6 +444,9 @@ const UserRow = memo(
                     } else if (isAIThinking) {
                       showInfoDialog("Procesando", "La IA está procesando los resultados. Por favor, espera.");
                     } else {
+                      // Abrir el diálogo directamente para procesar
+                      setIsDialogOpen(true);
+                      // Si ya hay resultados, cargarlos
                       checkResults();
                     }
                   }}
@@ -857,7 +723,7 @@ const UserRow = memo(
 
         {/* Employment Dashboard Dialog */}
         <Dialog open={isEmploymentDialogOpen} onOpenChange={setIsEmploymentDialogOpen}>
-          <DialogContent className="max-w-7xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-7xl max-h-[80vh] overflow-y-auto overflow-x-hidden">
             <DialogTitle></DialogTitle>
             <SalaryDataVisualization gender={userGender} careers={mapCareersToFields(recommendedCareers)} />
           </DialogContent>
@@ -1146,26 +1012,6 @@ export default memo(function Results({
               </div>
             </motion.div>
           </div>
-
-          {/* Gráficos de Resultados - Compactos */}
-          {(userResult.hollandResult || userResult.chasideResult) && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="border-t border-border pt-4"
-            >
-              <div className="mb-3 text-center">
-                <h3 className="text-xl font-bold mb-1">Análisis de Resultados</h3>
-              </div>
-              <div className="bg-background/50 rounded-xl p-4 border border-border">
-                <TestResults 
-                  hollandResult={userResult.hollandResult} 
-                  chasideResult={userResult.chasideResult} 
-                />
-              </div>
-            </motion.div>
-          )}
 
           {/* Acciones - Compactas */}
           <motion.div
