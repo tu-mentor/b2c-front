@@ -45,6 +45,11 @@ export const adminService = {
     await api.delete(`/admin/users/${id}`);
   },
 
+  async resetUserPassword(id: string): Promise<{ message: string }> {
+    const response = await api.post<{ message: string }>(`/admin/users/${id}/reset-password`);
+    return response;
+  },
+
   // ========== STATISTICS ==========
 
   async getStats(): Promise<AdminStats> {
@@ -136,6 +141,40 @@ export const adminService = {
 
   async assignCustomRoleToUser(userId: string, roleId: string): Promise<any> {
     const response = await api.post<any>(`/admin/users/${userId}/assign-role/${roleId}`);
+    return response;
+  },
+
+  // ========== PURCHASE REQUESTS MANAGEMENT ==========
+
+  async getPurchaseRequests(
+    status?: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<any> {
+    const params: any = { page, limit };
+    if (status) {
+      params.status = status;
+    }
+    const response = await api.get<any>("/admin/purchase-requests", { params });
+    return response;
+  },
+
+  async getPurchaseRequestById(requestId: string): Promise<any> {
+    const response = await api.get<any>(`/admin/purchase-requests/${requestId}`);
+    return response;
+  },
+
+  async approvePurchaseRequest(requestId: string, notes?: string): Promise<any> {
+    const response = await api.post<any>(`/admin/purchase-requests/${requestId}/approve`, {
+      notes: notes || undefined,
+    });
+    return response;
+  },
+
+  async rejectPurchaseRequest(requestId: string, notes?: string): Promise<any> {
+    const response = await api.post<any>(`/admin/purchase-requests/${requestId}/reject`, {
+      notes: notes || undefined,
+    });
     return response;
   },
 };

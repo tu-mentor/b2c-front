@@ -26,6 +26,7 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  KeyRound,
 } from "lucide-react";
 import LoadingSpinner from "../shared/spinner/loading-spinner";
 import { Alert, AlertDescription } from "../shared/alert";
@@ -68,6 +69,7 @@ export default function UserManagement() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -76,7 +78,6 @@ export default function UserManagement() {
     role: UserRole.USER,
     status: 1,
     emailVerified: false,
-    showAlertMessage: true,
   });
   const [hasAdmin, setHasAdmin] = useState<boolean>(true);
 
@@ -135,7 +136,6 @@ export default function UserManagement() {
       role: user.role,
       status: user.status,
       emailVerified: user.emailVerified,
-      showAlertMessage: user.showAlertMessage,
     });
     setIsEditDialogOpen(true);
   };
@@ -150,7 +150,6 @@ export default function UserManagement() {
       role: UserRole.USER,
       status: 1,
       emailVerified: false,
-      showAlertMessage: true,
     });
     setIsCreateDialogOpen(true);
   };
@@ -170,7 +169,6 @@ export default function UserManagement() {
         role: formData.role,
         status: formData.status,
         emailVerified: formData.emailVerified,
-        showAlertMessage: formData.showAlertMessage,
       });
       toast.success("Usuario actualizado exitosamente");
       setIsEditDialogOpen(false);
@@ -212,7 +210,6 @@ export default function UserManagement() {
         role: UserRole.USER,
         status: 1,
         emailVerified: false,
-        showAlertMessage: true,
       });
       fetchUsers();
       checkHasAdmin();
@@ -231,6 +228,24 @@ export default function UserManagement() {
       fetchUsers();
     } catch (err: any) {
       toast.error(err.message || "Error al eliminar el usuario");
+    }
+  };
+
+  const handleResetPassword = (user: AdminUser) => {
+    setSelectedUser(user);
+    setIsResetPasswordDialogOpen(true);
+  };
+
+  const handleConfirmResetPassword = async () => {
+    if (!selectedUser) return;
+
+    try {
+      const response = await adminService.resetUserPassword(selectedUser.id);
+      toast.success(response.message || "Link de reset de contraseña enviado exitosamente");
+      setIsResetPasswordDialogOpen(false);
+      setSelectedUser(null);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Error al enviar el link de reset de contraseña");
     }
   };
 
@@ -264,43 +279,57 @@ export default function UserManagement() {
         className="flex justify-between items-center"
       >
         <div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Gestión de Usuarios</h1>
-          <p className="text-gray-600">Administra los usuarios de la plataforma</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Gestión de Usuarios
+          </h1>
+          <p className="text-gray-600 text-lg">Administra los usuarios de la plataforma</p>
         </div>
-        <Button onClick={handleCreate} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Crear Usuario
-        </Button>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button 
+            onClick={handleCreate} 
+            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
+          >
+            <Plus className="h-4 w-4" />
+            Crear Usuario
+          </Button>
+        </motion.div>
       </motion.div>
 
-      <Card>
-        <CardHeader>
+      <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
           <div className="flex items-center justify-between">
-            <CardTitle>Lista de Usuarios</CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchUsers}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Actualizar
-            </Button>
+            <CardTitle className="text-xl font-semibold text-gray-800">Lista de Usuarios</CardTitle>
+            <motion.div whileHover={{ rotate: 180 }} transition={{ duration: 0.5 }}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchUsers}
+                className="flex items-center gap-2 hover:bg-indigo-50"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Actualizar
+              </Button>
+            </motion.div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex gap-4 mb-4">
+        <CardContent className="pt-6">
+          <div className="flex gap-4 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 placeholder="Buscar por nombre, email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                className="pl-10"
+                className="pl-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
               />
             </div>
-            <Button onClick={handleSearch}>Buscar</Button>
+            <Button 
+              onClick={handleSearch}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            >
+              Buscar
+            </Button>
           </div>
 
           {error && (
@@ -316,65 +345,96 @@ export default function UserManagement() {
             </div>
           ) : (
             <>
-              <div className="rounded-md border">
+              <div className="rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Rol</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Verificado</TableHead>
-                      <TableHead>Acciones</TableHead>
+                  <TableHeader className="bg-gradient-to-r from-gray-50 to-indigo-50/30">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="font-semibold text-gray-700">Nombre</TableHead>
+                      <TableHead className="font-semibold text-gray-700">Email</TableHead>
+                      <TableHead className="font-semibold text-gray-700">Rol</TableHead>
+                      <TableHead className="font-semibold text-gray-700">Estado</TableHead>
+                      <TableHead className="font-semibold text-gray-700">Verificado</TableHead>
+                      <TableHead className="font-semibold text-gray-700">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {!users || users.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                          No se encontraron usuarios
+                        <TableCell colSpan={6} className="text-center py-12 text-gray-500">
+                          <div className="flex flex-col items-center gap-2">
+                            <Users className="h-12 w-12 text-gray-300" />
+                            <p className="text-lg font-medium">No se encontraron usuarios</p>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      users.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">
+                      users.map((user, index) => (
+                        <motion.tr
+                          key={user.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="hover:bg-indigo-50/50 transition-colors"
+                        >
+                          <TableCell className="font-medium text-gray-800">
                             {user.firstName} {user.lastName}
                           </TableCell>
-                          <TableCell>{user.email}</TableCell>
+                          <TableCell className="text-gray-600">{user.email}</TableCell>
                           <TableCell>
-                            <Badge className={getRoleBadgeColor(user.role)}>
+                            <Badge className={`${getRoleBadgeColor(user.role)} font-medium px-2 py-1`}>
                               {user.role}
                             </Badge>
                           </TableCell>
                           <TableCell>{getStatusBadge(user.status)}</TableCell>
                           <TableCell>
                             {user.emailVerified ? (
-                              <Badge className="bg-green-100 text-green-800">Sí</Badge>
+                              <Badge className="bg-green-100 text-green-800 font-medium px-2 py-1">
+                                ✓ Sí
+                              </Badge>
                             ) : (
-                              <Badge className="bg-yellow-100 text-yellow-800">No</Badge>
+                              <Badge className="bg-yellow-100 text-yellow-800 font-medium px-2 py-1">
+                                ✗ No
+                              </Badge>
                             )}
                           </TableCell>
                           <TableCell>
                             <div className="flex gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleEdit(user)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleDelete(user)}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEdit(user)}
+                                  title="Editar usuario"
+                                  className="hover:bg-indigo-100 hover:border-indigo-300"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </motion.div>
+                              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleResetPassword(user)}
+                                  title="Resetear contraseña"
+                                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 hover:border-blue-300"
+                                >
+                                  <KeyRound className="h-4 w-4" />
+                                </Button>
+                              </motion.div>
+                              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDelete(user)}
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300"
+                                  title="Eliminar usuario"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </motion.div>
                             </div>
                           </TableCell>
-                        </TableRow>
+                        </motion.tr>
                       ))
                     )}
                   </TableBody>
@@ -479,16 +539,6 @@ export default function UserManagement() {
                 className="rounded"
               />
               <Label htmlFor="emailVerified">Email Verificado</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="showAlertMessage"
-                checked={formData.showAlertMessage}
-                onChange={(e) => setFormData({ ...formData, showAlertMessage: e.target.checked })}
-                className="rounded"
-              />
-              <Label htmlFor="showAlertMessage">Mostrar Mensaje de Alerta</Label>
             </div>
           </div>
           <DialogFooter>
@@ -602,6 +652,31 @@ export default function UserManagement() {
             </Button>
             <Button variant="destructive" onClick={handleConfirmDelete}>
               Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset Password Dialog */}
+      <Dialog open={isResetPasswordDialogOpen} onOpenChange={setIsResetPasswordDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Resetear Contraseña</DialogTitle>
+            <DialogDescription>
+              Se enviará un link de restablecimiento de contraseña al correo electrónico de{" "}
+              <strong>{selectedUser?.firstName} {selectedUser?.lastName}</strong> ({selectedUser?.email}).
+              <br />
+              <br />
+              El usuario podrá usar este link para establecer una nueva contraseña. El link expirará en 1 hora.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsResetPasswordDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmResetPassword} className="bg-blue-600 hover:bg-blue-700">
+              <KeyRound className="w-4 h-4 mr-2" />
+              Enviar Link de Reset
             </Button>
           </DialogFooter>
         </DialogContent>

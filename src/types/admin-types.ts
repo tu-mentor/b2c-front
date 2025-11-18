@@ -15,7 +15,6 @@ export interface AdminUser {
   role: UserRole;
   status: number;
   emailVerified: boolean;
-  showAlertMessage: boolean;
   createdAt: Date;
   updatedAt: Date;
   companyId?: string;
@@ -44,6 +43,7 @@ export interface AdminStats {
   adminUsers: number;
   activeSubscriptions: number;
   pendingSubscriptions: number;
+  pendingPurchaseRequests: number;
 }
 
 export interface CreateUserData {
@@ -63,7 +63,6 @@ export interface UpdateUserData {
   role?: UserRole;
   status?: number;
   emailVerified?: boolean;
-  showAlertMessage?: boolean;
 }
 
 export enum Permission {

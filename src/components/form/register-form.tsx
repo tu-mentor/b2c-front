@@ -146,8 +146,23 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
       
       const registerResult = await userService.createUser(userData);
       if (registerResult.id) {
-        setRegisteredEmail(data.email);
-        setShowVerification(true);
+        // En desarrollo, no mostrar pantalla de verificación
+        const isDevelopment = import.meta.env.DEV || import.meta.env.MODE === 'development';
+        
+        if (isDevelopment) {
+          // En desarrollo, mostrar mensaje de éxito y redirigir al login
+          setAlertInfo({
+            message: "¡Usuario creado exitosamente! En desarrollo, el email está verificado automáticamente. Puedes iniciar sesión ahora.",
+            type: "success",
+          });
+          setTimeout(() => {
+            onFlip(); // Volver al login
+          }, 2000);
+        } else {
+          // En producción, mostrar pantalla de verificación
+          setRegisteredEmail(data.email);
+          setShowVerification(true);
+        }
       }
     } catch (error: any) {
       if (error.message) {

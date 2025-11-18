@@ -12,7 +12,6 @@ export interface UserModel {
   password: string;
   countryCode: string;
   acceptTerms: boolean;
-  showAlertMessage: boolean;
   status: string;
   role?: string;
   companyId?: string;

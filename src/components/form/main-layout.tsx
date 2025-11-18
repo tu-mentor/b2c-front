@@ -27,6 +27,7 @@ import {
   LineChart,
   FileText,
   Shield,
+  ShoppingCart,
   type LucideIcon,
 } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -59,6 +60,7 @@ const HollandVocationalTest = lazy(() => import("./vocational-test/holland/holla
 const Results = lazy(() => import("./vocational-test/result/results"));
 const InstructionsVocationalTest = lazy(() => import("./vocational-test/instructions"));
 const WelcomeSection = lazy(() => import("./welcome"));
+const ModuleStore = lazy(() => import("./module-store/module-store"));
 
 type SubMenuItem = {
   icon: LucideIcon;
@@ -162,6 +164,7 @@ export default function MainLayout() {
   const [recommendedCareers, setRecommendedCareers] = useState<string[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>(initialMenuItems);
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
+  const [isB2BUser, setIsB2BUser] = useState(false);
 
 
   const handleLogout = useCallback(() => {
@@ -192,7 +195,12 @@ export default function MainLayout() {
           setUserSubscription(subscriptions);
 
           if (subscriptions) {
-            updateMenuItems(subscriptions);
+            // Verificar si es usuario B2B (tiene company pero no suscripciones individuales)
+            const hasIndividualSubscriptions = subscriptions.subscriptions && subscriptions.subscriptions.length > 0;
+            const hasCompany = userInfo.user?.companyId || userInfo.user?.company;
+            const b2bStatus = !!hasCompany && !hasIndividualSubscriptions;
+            setIsB2BUser(b2bStatus);
+            updateMenuItems(subscriptions, b2bStatus);
           }
         }
       } catch (error) {
@@ -205,7 +213,7 @@ export default function MainLayout() {
   }, [navigate]);
 
   // Memoización de la función updateMenuItems
-  const updateMenuItems = useCallback((subscriptions: UserSubscription) => {
+  const updateMenuItems = useCallback((subscriptions: UserSubscription, isB2B: boolean = false) => {
     const currentDate = new Date();
 
     const updatedMenuItems = initialMenuItems.map((item) => {
@@ -230,6 +238,18 @@ export default function MainLayout() {
         subItems: updatedSubItems,
       };
     });
+
+    // Agregar opción de Tienda de Módulos si es usuario B2B
+    if (isB2B) {
+      const storeMenuItem: MenuItem = {
+        icon: ShoppingCart,
+        text: "Tienda de Módulos",
+        id: "moduleStore",
+        identifier: "store",
+        enabled: true,
+      };
+      updatedMenuItems.push(storeMenuItem);
+    }
 
     setMenuItems(updatedMenuItems);
     return updatedMenuItems;
@@ -377,6 +397,12 @@ export default function MainLayout() {
             />
           </Suspense>
         ) : null;
+      case "moduleStore":
+        return (
+          <Suspense fallback={<div>Cargando...</div>}>
+            <ModuleStore />
+          </Suspense>
+        );
       default:
         return (
           <div className="flex h-screen items-center justify-center">

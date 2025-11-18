@@ -60,6 +60,11 @@ interface Subscription {
     maxUsers: number;
     currentUsers: number;
   };
+  users?: Array<{
+    email: string;
+    firstName: string;
+    lastName: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
@@ -81,6 +86,7 @@ export default function SubscriptionManagement() {
     limit: 10,
     status: "all",
     type: "all",
+    search: "",
   });
   const [pagination, setPagination] = useState({
     total: 0,
@@ -88,7 +94,7 @@ export default function SubscriptionManagement() {
     limit: 10,
     totalPages: 0,
   });
-  const [searchTerm, setSearchTerm] = useState("");
+  const [emailSearchTerm, setEmailSearchTerm] = useState("");
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -107,6 +113,7 @@ export default function SubscriptionManagement() {
     endDate: "",
     module: "", // Para B2C
     maxUsers: "", // Para B2B
+    selectedModules: [] as string[], // Para B2B - módulos seleccionados
   });
 
   const fetchSubscriptions = async () => {
@@ -138,7 +145,11 @@ export default function SubscriptionManagement() {
 
   useEffect(() => {
     fetchSubscriptions();
-  }, [params.page, params.limit, params.status, params.type]);
+  }, [params.page, params.limit, params.status, params.type, params.search]);
+
+  const handleEmailSearch = () => {
+    setParams({ ...params, page: 1, search: emailSearchTerm });
+  };
 
   useEffect(() => {
     const fetchUsersAndModules = async () => {
@@ -169,6 +180,7 @@ export default function SubscriptionManagement() {
       endDate: "",
       module: "",
       maxUsers: "",
+      selectedModules: [],
     });
     setIsCreateDialogOpen(true);
   };
@@ -208,9 +220,16 @@ export default function SubscriptionManagement() {
           toast.error("Debe especificar el número máximo de usuarios para suscripciones B2B");
           return;
         }
+        // Construir array de módulos para B2B
+        const b2bModules = createFormData.selectedModules.map((moduleId) => ({
+          moduleId: moduleId,
+          // Las fechas por módulo son opcionales, se pueden agregar en el futuro
+        }));
+        
         subscriptionData.btbDetails = {
           maxUsers: parseInt(createFormData.maxUsers, 10),
           currentUsers: 0,
+          modules: b2bModules.length > 0 ? b2bModules : undefined, // Si no hay módulos, se puede crear sin ellos
         };
       }
 
@@ -306,7 +325,32 @@ export default function SubscriptionManagement() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-2 mb-4">
+          <div className="flex items-center space-x-2 mb-4 flex-wrap gap-2">
+            <Input
+              placeholder="Buscar por correo electrónico..."
+              value={emailSearchTerm}
+              onChange={(e) => setEmailSearchTerm(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  handleEmailSearch();
+                }
+              }}
+              className="max-w-sm"
+            />
+            <Button onClick={handleEmailSearch}>
+              <Search className="mr-2 h-4 w-4" /> Buscar
+            </Button>
+            {params.search && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEmailSearchTerm("");
+                  setParams({ ...params, page: 1, search: "" });
+                }}
+              >
+                Limpiar
+              </Button>
+            )}
             <Select
               value={params.status}
               onValueChange={(value) => setParams({ ...params, page: 1, status: value })}
@@ -351,6 +395,7 @@ export default function SubscriptionManagement() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>ID</TableHead>
+                    <TableHead>Usuario</TableHead>
                     <TableHead>Tipo</TableHead>
                     <TableHead>Estado</TableHead>
                     <TableHead>Módulo</TableHead>
@@ -360,10 +405,24 @@ export default function SubscriptionManagement() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {subscriptions.map((subscription) => (
-                    <TableRow key={subscription._id}>
+                  {subscriptions.map((subscription, index) => (
+                    <TableRow key={subscription._id || `subscription-${index}`}>
                       <TableCell className="font-mono text-xs">
-                        {subscription._id.substring(0, 8)}...
+                        {subscription._id ? `${subscription._id.toString().substring(0, 8)}...` : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        {subscription.users && subscription.users.length > 0 ? (
+                          <div className="space-y-1">
+                            {subscription.users.map((user, idx) => (
+                              <div key={idx} className="text-sm">
+                                <div className="font-medium">{user.firstName} {user.lastName}</div>
+                                <div className="text-gray-500 text-xs">{user.email}</div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 text-sm">N/A</span>
+                        )}
                       </TableCell>
                       <TableCell>{getTypeBadge(subscription.type)}</TableCell>
                       <TableCell>{getStatusBadge(subscription.status)}</TableCell>
@@ -497,7 +556,7 @@ export default function SubscriptionManagement() {
               <Label htmlFor="type">Tipo de Suscripción</Label>
               <Select
                 value={createFormData.type}
-                onValueChange={(value) => setCreateFormData({ ...createFormData, type: value, module: "", maxUsers: "" })}
+                onValueChange={(value) => setCreateFormData({ ...createFormData, type: value, module: "", maxUsers: "", selectedModules: [] })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -546,17 +605,62 @@ export default function SubscriptionManagement() {
               </div>
             )}
             {createFormData.type === "1" && (
-              <div className="space-y-2">
-                <Label htmlFor="maxUsers">Máximo de Usuarios (B2B)</Label>
-                <Input
-                  id="maxUsers"
-                  type="number"
-                  min="1"
-                  value={createFormData.maxUsers}
-                  onChange={(e) => setCreateFormData({ ...createFormData, maxUsers: e.target.value })}
-                  placeholder="Ej: 10"
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="maxUsers">Máximo de Usuarios (B2B)</Label>
+                  <Input
+                    id="maxUsers"
+                    type="number"
+                    min="1"
+                    value={createFormData.maxUsers}
+                    onChange={(e) => setCreateFormData({ ...createFormData, maxUsers: e.target.value })}
+                    placeholder="Ej: 10"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Módulos (B2B) - Seleccione uno o más</Label>
+                  <div className="border rounded-md p-3 max-h-48 overflow-y-auto space-y-2">
+                    {modules.length === 0 ? (
+                      <p className="text-sm text-gray-500">Cargando módulos...</p>
+                    ) : (
+                      modules.map((module) => (
+                        <div key={module._id} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`module-${module._id}`}
+                            checked={createFormData.selectedModules.includes(module._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setCreateFormData({
+                                  ...createFormData,
+                                  selectedModules: [...createFormData.selectedModules, module._id],
+                                });
+                              } else {
+                                setCreateFormData({
+                                  ...createFormData,
+                                  selectedModules: createFormData.selectedModules.filter((id) => id !== module._id),
+                                });
+                              }
+                            }}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <label
+                            htmlFor={`module-${module._id}`}
+                            className="text-sm font-medium text-gray-700 cursor-pointer"
+                          >
+                            {module.name}
+                          </label>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  {createFormData.selectedModules.length === 0 && (
+                    <p className="text-xs text-gray-500">
+                      Si no selecciona módulos, la suscripción se creará sin módulos específicos
+                    </p>
+                  )}
+                </div>
+              </>
             )}
             <div className="space-y-2">
               <Label htmlFor="createStartDate">Fecha de Inicio</Label>
