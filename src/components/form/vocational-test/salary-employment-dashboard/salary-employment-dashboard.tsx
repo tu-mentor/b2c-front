@@ -117,10 +117,6 @@ export default function SalaryEmploymentDashboard({ gender, recomendedCarrers = 
     fetchResults();
   }, []);
 
-  useEffect(() => {
-    setData(gender === "0" ? femaleData : maleData);
-  }, [gender]);
-
   const filteredData =
     data
       .find((yearData) => yearData.year === selectedYear)

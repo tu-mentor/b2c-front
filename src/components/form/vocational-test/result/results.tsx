@@ -91,14 +91,14 @@ const UserRow = memo(
       actionLabel: null as string | null,
       onAction: null as (() => void) | null
     });
-    const [careerType, setCareerType] = useState("");
     const [selectedCareer, setSelectedCareer] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [progress, setProgress] = useState(0);
     const [progressMessage, setProgressMessage] = useState("");
     const [userName, setUserName] = useState<string>("Usuario");
-    const [userGender, setUserGenderState] = useState<string>("0");
+    const [userGender, setUserGenderState] = useState<string | null>(null);
     const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+    const [isGenderDialogOpen, setIsGenderDialogOpen] = useState(false);
     const [requestingOption, setRequestingOption] = useState<"aiAnalysis" | "employmentData" | "compareCosts" | null>(null);
     const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
     
@@ -114,8 +114,7 @@ const UserRow = memo(
           const userInfo = await getUserInfo(userId);
           if (userInfo?.user) {
             setUserName(`${userInfo.user.firstName} ${userInfo.user.lastName}`);
-            // El género podría estar en userInfo.user.gender si existe
-            setUserGenderState(userInfo.user.gender || "0");
+            // No cargar el género automáticamente, se pedirá cuando sea necesario
           }
         } catch (error) {
           console.error("Error loading user info:", error);
@@ -211,28 +210,8 @@ const UserRow = memo(
       fetchCareers();
     }, [userId]);
 
-    useEffect(() => {
-      const loadCompanyCharacteristics = async () => {
-        try {
-          const userInfo = await getUserInfo(getUserId());
-          if (userInfo?.user?.companyCharacteristics) {
-            const typeCareer = userInfo.user.companyCharacteristics.find(
-              (char: CompanyCharacteristic) => char.name === "typeCareer",
-            );
-            if (typeCareer && (typeCareer.value === "p" || typeCareer.value === "t")) {
-              setCareerType(typeCareer.value === "p" ? "profesional" : "tecnica");
-            }
-          }
-        } catch (error) {
-          console.error("Error loading company characteristics:", error);
-        }
-      };
-
-      loadCompanyCharacteristics();
-    }, []);
 
     const processResults = useCallback(async () => {
-      if (!careerType) return;
 
       console.log(`[Frontend] Iniciando procesamiento de resultados para usuario ${userId}`);
       const startTime = Date.now();
@@ -351,7 +330,7 @@ const UserRow = memo(
       try {
         result = await vocationalService.processResults({
           userId: userId,
-          careerType,
+          careerType: "profesional", // Valor por defecto, ya no se solicita al usuario
           selectedCareer,
         });
 
@@ -370,14 +349,14 @@ const UserRow = memo(
         }
       }
 
-      // Timeout de 90 segundos - si no se completó, forzar finalización
+      // Timeout de 60 segundos - si no se completó, forzar finalización
       setTimeout(() => {
         if (!isCompleted) {
-          console.log(`[Frontend] Timeout de 90 segundos alcanzado`);
+          console.log(`[Frontend] Timeout de 60 segundos alcanzado`);
           completeProcessing(result);
         }
-      }, 90000);
-    }, [userId, careerType, selectedCareer, setAiResultsAvailable]);
+      }, 60000);
+    }, [userId, selectedCareer, setAiResultsAvailable]);
 
     useEffect(() => {
       const checkExistingResults = async () => {
@@ -471,7 +450,7 @@ const UserRow = memo(
 
           const results = await vocationalService.processResults({
             userId: userId,
-            careerType: "",
+            careerType: "profesional", // Valor por defecto, ya no se solicita al usuario
             selectedCareer: "",
           });
 
@@ -633,7 +612,12 @@ const UserRow = memo(
                         "Para ver los datos de empleo, primero debes procesar los resultados con IA.",
                       );
                     } else {
-                      setIsEmploymentDialogOpen(true);
+                      // Verificar si el usuario tiene género seleccionado
+                      if (userGender === null) {
+                        setIsGenderDialogOpen(true);
+                      } else {
+                        setIsEmploymentDialogOpen(true);
+                      }
                     }
                   }}
                   disabled={!aiResultsAvailable || !hasEmploymentDataAccess}
@@ -759,33 +743,6 @@ const UserRow = memo(
                   {!existingResults && !displayedResponse ? (
                     <>
                       <div className="space-y-4">
-                        {!careerType && (
-                          <>
-                            <b className="text-gray-700 font-lg block text-center">
-                              Antes de procesar tus resultados indícanos que tipo de carrera te gustaría estudiar.
-                            </b>
-                            <div className="space-y-4">
-                              <b className="text-gray-600">Carrera técnica:</b> Formación de corta duración (1-3 años)
-                              que capacita a los estudiantes en habilidades prácticas y específicas para desempeñarse en
-                              campos técnicos o tecnológicos. <br />
-                              <b className="text-gray-600">Carrera profesional:</b> Formación de mayor duración (4-6
-                              años) que ofrece una educación integral, académica y especializada para asumir roles de
-                              responsabilidad y liderazgo en diversas áreas profesionales.
-                              <div className="relative">
-                                <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                                <Select onValueChange={(value) => setCareerType(value)}>
-                                  <SelectTrigger className="w-full pl-10 bg-white dark:bg-gray-800 border-2 border-blue-200 dark:border-gray-600 rounded-xl hover:border-blue-300 dark:hover:border-gray-500 transition-all duration-300">
-                                    <SelectValue placeholder="Selecciona el tipo de carrera" />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-white dark:bg-gray-800 border-2 border-blue-200 dark:border-gray-600 rounded-xl">
-                                    <SelectItem value="profesional" className="hover:bg-blue-50 dark:hover:bg-gray-700">Carrera Profesional</SelectItem>
-                                    <SelectItem value="tecnica" className="hover:bg-blue-50 dark:hover:bg-gray-700">Carrera Técnica</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                          </>
-                        )}
                         {/* Pregunta sobre habilidades blandas */}
                         <div className="relative hidden">
                           <Stars className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -825,9 +782,9 @@ const UserRow = memo(
                           whileHover={{ scale: (isAIThinking || isLoading) ? 1 : 1.02 }}
                           whileTap={{ scale: (isAIThinking || isLoading) ? 1 : 0.98 }}
                           onClick={processResults}
-                          disabled={!careerType || isAIThinking || isLoading}
+                          disabled={isAIThinking || isLoading}
                           className={`w-full font-bold py-3 px-6 rounded-xl shadow-lg transition-all duration-300 flex items-center justify-center space-x-2 ${
-                            !careerType || isAIThinking || isLoading
+                            isAIThinking || isLoading
                               ? 'bg-gray-400 cursor-not-allowed text-gray-200'
                               : 'bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white hover:shadow-xl'
                           }`}
@@ -882,11 +839,82 @@ const UserRow = memo(
           </DialogContent>
         </Dialog>
 
+        {/* Gender Selection Dialog */}
+        <Dialog open={isGenderDialogOpen} onOpenChange={setIsGenderDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Selección de Género</DialogTitle>
+              <DialogDescription>
+                Necesitamos conocer tu género para mostrarte datos de empleo y salarios más precisos.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                      ¿Por qué solicitamos esta información?
+                    </p>
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      Los datos de empleo y salarios que mostramos están diferenciados por género según las estadísticas oficiales del Ministerio del Trabajo. 
+                      Al seleccionar tu género, podremos mostrarte información más precisa y relevante sobre las oportunidades laborales y salarios promedio 
+                      en las carreras que te recomendamos.
+                    </p>
+                    <p className="text-xs text-blue-700 dark:text-blue-300 italic">
+                      Esta información se utiliza únicamente para personalizar los datos estadísticos y no se comparte con terceros.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="gender-select" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Selecciona tu género:
+                </label>
+                <Select
+                  value={userGender || ""}
+                  onValueChange={(value) => setUserGenderState(value)}
+                >
+                  <SelectTrigger id="gender-select" className="w-full">
+                    <SelectValue placeholder="Selecciona una opción" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Femenino</SelectItem>
+                    <SelectItem value="1">Masculino</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setIsGenderDialogOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={() => {
+                  if (userGender !== null) {
+                    setIsGenderDialogOpen(false);
+                    setIsEmploymentDialogOpen(true);
+                  } else {
+                    toast.error("Por favor, selecciona tu género para continuar");
+                  }
+                }}
+                disabled={userGender === null}
+                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
+              >
+                Continuar
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Employment Dashboard Dialog */}
         <Dialog open={isEmploymentDialogOpen} onOpenChange={setIsEmploymentDialogOpen}>
           <DialogContent className="max-w-7xl max-h-[80vh] overflow-y-auto overflow-x-hidden">
             <DialogTitle></DialogTitle>
-            <SalaryDataVisualization gender={userGender} careers={mapCareersToFields(recommendedCareers)} />
+            <SalaryDataVisualization gender={userGender || "0"} careers={mapCareersToFields(recommendedCareers)} />
           </DialogContent>
         </Dialog>
 
