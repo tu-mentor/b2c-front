@@ -60,7 +60,22 @@ const HollandVocationalTest = lazy(() => import("./vocational-test/holland/holla
 const Results = lazy(() => import("./vocational-test/result/results"));
 const InstructionsVocationalTest = lazy(() => import("./vocational-test/instructions"));
 const WelcomeSection = lazy(() => import("./welcome"));
-const ModuleStore = lazy(() => import("./module-store/module-store"));
+const ModuleStore = lazy(() => 
+  import("./module-store/module-store").catch((error) => {
+    console.error("Error loading ModuleStore:", error);
+    // Retornar un componente de fallback
+    return {
+      default: () => (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">Error al cargar la tienda de módulos</p>
+            <p className="text-sm text-gray-500">Por favor, recarga la página</p>
+          </div>
+        </div>
+      )
+    };
+  })
+);
 
 type SubMenuItem = {
   icon: LucideIcon;
@@ -211,6 +226,19 @@ export default function MainLayout() {
 
     initializeApp();
   }, [navigate]);
+
+  // Escuchar eventos personalizados para cambiar de sección
+  useEffect(() => {
+    const handleSectionChange = (event: CustomEvent<string>) => {
+      setActiveSection(event.detail);
+    };
+
+    window.addEventListener('changeSection' as any, handleSectionChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('changeSection' as any, handleSectionChange as EventListener);
+    };
+  }, []);
 
   // Memoización de la función updateMenuItems
   const updateMenuItems = useCallback((subscriptions: UserSubscription, isB2B: boolean = false) => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../shared/button";
-import { LayoutDashboard, Users, LogOut, Menu, X, CreditCard, ShoppingCart, Building2, Package, Shield, UserCog } from "lucide-react";
+import { LayoutDashboard, Users, LogOut, Menu, X, CreditCard, ShoppingCart, Building2, Package, Shield, UserCog, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { logout, getUserId, getUserInfo } from "../../services/auth-service";
 import AdminDashboard from "./AdminDashboard";
@@ -12,8 +12,9 @@ import CompanyManagement from "./CompanyManagement";
 import ModuleManagement from "./ModuleManagement";
 import CustomRolesManagement from "./CustomRolesManagement";
 import B2CDefaultsManagement from "./B2CDefaultsManagement";
+import EmailTemplatesManagement from "./EmailTemplatesManagement";
 
-type AdminSection = "dashboard" | "users" | "subscriptions" | "purchase-requests" | "companies" | "modules" | "custom-roles" | "b2c-defaults";
+type AdminSection = "dashboard" | "users" | "subscriptions" | "purchase-requests" | "companies" | "modules" | "custom-roles" | "b2c-defaults" | "email-templates";
 
 export default function AdminLayout() {
   const [activeSection, setActiveSection] = useState<AdminSection>("dashboard");
@@ -109,6 +110,11 @@ export default function AdminLayout() {
       id: "b2c-defaults" as AdminSection,
       label: "Configuración B2C",
       icon: UserCog,
+    },
+    {
+      id: "email-templates" as AdminSection,
+      label: "Plantillas de Correo",
+      icon: Mail,
     },
   ];
 
@@ -226,6 +232,7 @@ export default function AdminLayout() {
             {activeSection === "modules" && <ModuleManagement />}
             {activeSection === "custom-roles" && <CustomRolesManagement />}
             {activeSection === "b2c-defaults" && <B2CDefaultsManagement />}
+            {activeSection === "email-templates" && <EmailTemplatesManagement />}
           </main>
         </div>
     </div>

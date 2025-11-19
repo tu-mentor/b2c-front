@@ -20,6 +20,8 @@ import { createPortal } from "react-dom";
 import { getUserId, getUserInfo } from "../../../../services/auth-service";
 import { vocationalService } from "../../../../services/vocational-service";
 import { resultService } from "../../../../services/vocational-test/result-service";
+import { suscriptionService } from "../../../../services/suscription-service";
+import { toast } from "react-hot-toast";
 import type { CompanyCharacteristic } from "../../../../types/auth-types";
 import type { Subscription } from "../../../../types/suscriptions";
 import { Alert, AlertDescription, AlertTitle } from "../../../shared/alert";
@@ -61,13 +63,15 @@ const HOLLAND_QUESTIONS = hollandQuestions.length;
 const CHASIDE_QUESTIONS = chasideQuestions.length;
 
 const UserRow = memo(
-  ({ userId, hollandResult, chasideResult, aiResultsAvailable, setAiResultsAvailable, handleViewCareerComparison }: {
+  ({ userId, hollandResult, chasideResult, aiResultsAvailable, setAiResultsAvailable, handleViewCareerComparison, subscriptions, isB2CUser }: {
     userId: string;
     hollandResult: any;
     chasideResult: any;
     aiResultsAvailable: boolean;
     setAiResultsAvailable: (value: boolean) => void;
     handleViewCareerComparison: (careers: Career[]) => void;
+    subscriptions: Subscription[];
+    isB2CUser: boolean;
   }) => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [isEmploymentDialogOpen, setIsEmploymentDialogOpen] = useState<boolean>(false);
@@ -81,7 +85,12 @@ const UserRow = memo(
     const [recommendedCareers, setRecommendedCareers] = useState<string[]>([]);
     const [isAIThinking, setIsAIThinking] = useState(false);
     const [isInfoDialogOpen, setIsInfoDialogOpen] = useState(false);
-    const [infoDialogContent, setInfoDialogContent] = useState({ title: "", message: "" });
+    const [infoDialogContent, setInfoDialogContent] = useState({ 
+      title: "", 
+      message: "", 
+      actionLabel: null as string | null,
+      onAction: null as (() => void) | null
+    });
     const [careerType, setCareerType] = useState("");
     const [selectedCareer, setSelectedCareer] = useState("");
     const [isOpen, setIsOpen] = useState(false);
@@ -89,6 +98,15 @@ const UserRow = memo(
     const [progressMessage, setProgressMessage] = useState("");
     const [userName, setUserName] = useState<string>("Usuario");
     const [userGender, setUserGenderState] = useState<string>("0");
+    const [isRequestDialogOpen, setIsRequestDialogOpen] = useState(false);
+    const [requestingOption, setRequestingOption] = useState<"aiAnalysis" | "employmentData" | "compareCosts" | null>(null);
+    const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
+    
+    // Función para cambiar de sección usando evento personalizado
+    const changeSection = useCallback((section: string) => {
+      const event = new CustomEvent('changeSection', { detail: section });
+      window.dispatchEvent(event);
+    }, []);
 
     useEffect(() => {
       const loadUserInfo = async () => {
@@ -111,6 +129,73 @@ const UserRow = memo(
         hollandResult?.currentQuestion === HOLLAND_QUESTIONS && chasideResult?.currentQuestion === CHASIDE_QUESTIONS,
       );
     }, [hollandResult?.currentQuestion, chasideResult?.currentQuestion]);
+
+    // Obtener la suscripción del módulo de Orientación Vocacional
+    const vocationalSubscription = useMemo(() => {
+      return subscriptions.find((sub) => sub.moduleId === "678d625ce2695682ef90951b");
+    }, [subscriptions]);
+
+    // Función para enviar solicitud de acceso a opciones
+    const handleRequestAccess = useCallback(async () => {
+      if (!requestingOption) return;
+
+      try {
+        setIsSubmittingRequest(true);
+        const userId = getUserId();
+        if (!userId) {
+          toast.error("No se pudo obtener el ID del usuario");
+          return;
+        }
+
+        const moduleId = "678d625ce2695682ef90951b"; // Orientación Vocacional
+        
+        const requestedOptions: any = {
+          resultsOptions: {},
+        };
+
+        if (requestingOption === "aiAnalysis") {
+          requestedOptions.resultsOptions.aiAnalysis = true;
+        } else if (requestingOption === "employmentData") {
+          requestedOptions.resultsOptions.employmentData = true;
+        } else if (requestingOption === "compareCosts") {
+          requestedOptions.resultsOptions.compareCosts = true;
+        }
+
+        const purchaseData = {
+          moduleId,
+          requestedOptions,
+          requestReason: `Solicitud de acceso a ${requestingOption === "aiAnalysis" ? "Análisis con IA" : requestingOption === "employmentData" ? "Datos de Empleo" : "Comparar Costos"}`,
+        };
+
+        const response = await suscriptionService.purchaseModule(userId, purchaseData);
+
+        if (response.success) {
+          toast.success(response.message || "Solicitud enviada exitosamente. Será revisada por el administrador.");
+          setIsRequestDialogOpen(false);
+          setRequestingOption(null);
+        } else {
+          toast.error(response.message || "Error al enviar la solicitud");
+        }
+      } catch (error: any) {
+        console.error("Error sending request:", error);
+        toast.error(error.response?.data?.message || "Error al enviar la solicitud");
+      } finally {
+        setIsSubmittingRequest(false);
+      }
+    }, [requestingOption]);
+
+    // Verificar acceso a las opciones
+    const hasAIAnalysisAccess = useMemo(() => {
+      return vocationalSubscription?.vocationalOptions?.resultsOptions?.aiAnalysis !== false;
+    }, [vocationalSubscription]);
+
+    const hasEmploymentDataAccess = useMemo(() => {
+      return vocationalSubscription?.vocationalOptions?.resultsOptions?.employmentData !== false;
+    }, [vocationalSubscription]);
+
+    const hasCompareCostsAccess = useMemo(() => {
+      return vocationalSubscription?.vocationalOptions?.resultsOptions?.compareCosts !== false;
+    }, [vocationalSubscription]);
 
     useEffect(() => {
       const fetchCareers = async () => {
@@ -360,8 +445,18 @@ const UserRow = memo(
       };
     }, [aiResponse, isDialogOpen, existingResults]);
 
-    const showInfoDialog = (title: string, message: string) => {
-      setInfoDialogContent({ title, message });
+    const showInfoDialog = (
+      title: string, 
+      message: string, 
+      actionLabel?: string | null, 
+      onAction?: (() => void) | null
+    ) => {
+      setInfoDialogContent({ 
+        title, 
+        message, 
+        actionLabel: actionLabel || null,
+        onAction: onAction || null
+      });
       setIsInfoDialogOpen(true);
     };
 
@@ -436,6 +531,28 @@ const UserRow = memo(
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
+                    if (!hasAIAnalysisAccess) {
+                      if (isB2CUser) {
+                        showInfoDialog(
+                          "Acceso Premium Requerido",
+                          "Para acceder al análisis con IA, necesitas una suscripción premium. Por favor, contacta al administrador o visita la sección de suscripciones para más información.",
+                          "Solicitar Acceso",
+                          () => {
+                            setRequestingOption("aiAnalysis");
+                            setIsRequestDialogOpen(true);
+                          }
+                        );
+                      } else {
+                        showInfoDialog(
+                          "Suscripción requerida",
+                          "Para acceder al análisis con IA, necesitas suscribirte a esta funcionalidad. Serás redirigido a la tienda de módulos.",
+                        );
+                        setTimeout(() => {
+                          changeSection("moduleStore");
+                        }, 2000);
+                      }
+                      return;
+                    }
                     if (!allTestsCompleted) {
                       showInfoDialog(
                         "Acción requerida",
@@ -488,6 +605,28 @@ const UserRow = memo(
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
+                    if (!hasEmploymentDataAccess) {
+                      if (isB2CUser) {
+                        showInfoDialog(
+                          "Acceso Premium Requerido",
+                          "Para acceder a los datos de empleo, necesitas una suscripción premium. Por favor, contacta al administrador o visita la sección de suscripciones para más información.",
+                          "Solicitar Acceso",
+                          () => {
+                            setRequestingOption("employmentData");
+                            setIsRequestDialogOpen(true);
+                          }
+                        );
+                      } else {
+                        showInfoDialog(
+                          "Suscripción requerida",
+                          "Para acceder a los datos de empleo, necesitas suscribirte a esta funcionalidad. Serás redirigido a la tienda de módulos.",
+                        );
+                        setTimeout(() => {
+                          changeSection("moduleStore");
+                        }, 2000);
+                      }
+                      return;
+                    }
                     if (!aiResultsAvailable) {
                       showInfoDialog(
                         "Acción requerida",
@@ -497,7 +636,7 @@ const UserRow = memo(
                       setIsEmploymentDialogOpen(true);
                     }
                   }}
-                  disabled={!aiResultsAvailable}
+                  disabled={!aiResultsAvailable || !hasEmploymentDataAccess}
                   className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
                 >
                   <Briefcase className="h-5 w-5" />
@@ -530,6 +669,28 @@ const UserRow = memo(
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => {
+                    if (!hasCompareCostsAccess) {
+                      if (isB2CUser) {
+                        showInfoDialog(
+                          "Acceso Premium Requerido",
+                          "Para comparar los costos de carreras, necesitas una suscripción premium. Por favor, contacta al administrador o visita la sección de suscripciones para más información.",
+                          "Solicitar Acceso",
+                          () => {
+                            setRequestingOption("compareCosts");
+                            setIsRequestDialogOpen(true);
+                          }
+                        );
+                      } else {
+                        showInfoDialog(
+                          "Suscripción requerida",
+                          "Para comparar los costos de carreras, necesitas suscribirte a esta funcionalidad. Serás redirigido a la tienda de módulos.",
+                        );
+                        setTimeout(() => {
+                          changeSection("moduleStore");
+                        }, 2000);
+                      }
+                      return;
+                    }
                     if (!aiResultsAvailable) {
                       showInfoDialog(
                         "Acción requerida",
@@ -539,7 +700,7 @@ const UserRow = memo(
                       setIsCarrerCostsDialogOpen(true);
                     }
                   }}
-                  disabled={!aiResultsAvailable}
+                  disabled={!aiResultsAvailable || !hasCompareCostsAccess}
                   className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-sm"
                 >
                   <FileText className="h-5 w-5" />
@@ -742,11 +903,74 @@ const UserRow = memo(
               <DialogTitle>{infoDialogContent.title}</DialogTitle>
               <DialogDescription>{infoDialogContent.message}</DialogDescription>
             </DialogHeader>
-            <DialogFooter>
-              <Button onClick={() => setIsInfoDialogOpen(false)}>Entendido</Button>
+            <DialogFooter className="flex gap-2">
+              {infoDialogContent.actionLabel && infoDialogContent.onAction && (
+                <Button
+                  onClick={() => {
+                    setIsInfoDialogOpen(false);
+                    infoDialogContent.onAction?.();
+                  }}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
+                >
+                  {infoDialogContent.actionLabel}
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                onClick={() => setIsInfoDialogOpen(false)}
+              >
+                {infoDialogContent.actionLabel ? "Cancelar" : "Entendido"}
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Diálogo de solicitud de acceso */}
+        <Dialog open={isRequestDialogOpen} onOpenChange={setIsRequestDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Solicitar Acceso Premium</DialogTitle>
+              <DialogDescription>
+                {requestingOption === "aiAnalysis" && "Solicita acceso al análisis con IA de tus resultados vocacionales."}
+                {requestingOption === "employmentData" && "Solicita acceso a los datos de empleo y estadísticas laborales."}
+                {requestingOption === "compareCosts" && "Solicita acceso a la comparación de costos de carreras universitarias."}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-sm text-gray-600 mb-4">
+                Tu solicitud será revisada por el administrador. Recibirás una notificación cuando sea procesada.
+              </p>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm font-semibold text-blue-900 mb-2">Opción solicitada:</p>
+                <p className="text-sm text-blue-800">
+                  {requestingOption === "aiAnalysis" && "✓ Análisis con IA"}
+                  {requestingOption === "employmentData" && "✓ Datos de Empleo"}
+                  {requestingOption === "compareCosts" && "✓ Comparar Costos"}
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsRequestDialogOpen(false);
+                  setRequestingOption(null);
+                }}
+                disabled={isSubmittingRequest}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleRequestAccess}
+                disabled={isSubmittingRequest}
+                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white"
+              >
+                {isSubmittingRequest ? "Enviando..." : "Enviar Solicitud"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {isLoading && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[100]">
             <LoadingCard />
@@ -787,6 +1011,10 @@ export default memo(function Results({
   userId: string;
   subscriptions: Subscription[];
 }) {
+  // Determinar si el usuario es B2C (tiene suscripciones individuales)
+  const isB2CUser = useMemo(() => {
+    return subscriptions && subscriptions.length > 0;
+  }, [subscriptions]);
   const [userResult, setUserResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -1054,6 +1282,8 @@ export default memo(function Results({
                 aiResultsAvailable={aiResultsAvailable}
                 setAiResultsAvailable={setAiResultsAvailable}
                 handleViewCareerComparison={handleViewCareerComparison}
+                subscriptions={subscriptions}
+                isB2CUser={isB2CUser}
               />
             </div>
           </motion.div>

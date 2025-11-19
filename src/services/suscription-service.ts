@@ -22,6 +22,14 @@ export interface PurchaseModuleData {
   paymentProvider?: string;
   paymentIntentId?: string;
   transactionId?: string;
+  requestedOptions?: {
+    resultsOptions?: {
+      aiAnalysis?: boolean;
+      employmentData?: boolean;
+      compareCosts?: boolean;
+    };
+  };
+  requestReason?: string;
 }
 
 export interface PurchaseModuleResponse {

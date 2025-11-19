@@ -93,6 +93,11 @@ export default function PurchaseRequestsManagement() {
   const [isApproveDialogOpen, setIsApproveDialogOpen] = useState(false);
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
   const [notes, setNotes] = useState("");
+  const [approveFormData, setApproveFormData] = useState({
+    startDate: "",
+    endDate: "",
+    status: "1", // ACTIVE por defecto
+  });
 
   const fetchRequests = async () => {
     try {
@@ -135,6 +140,25 @@ export default function PurchaseRequestsManagement() {
   const handleApproveClick = (request: PurchaseRequest) => {
     setSelectedRequest(request);
     setNotes("");
+    
+    // Calcular fechas por defecto basadas en los meses solicitados
+    const today = new Date();
+    const startDate = new Date(today);
+    const endDate = new Date(today);
+    
+    if (request.months > 0) {
+      endDate.setMonth(endDate.getMonth() + request.months);
+    } else {
+      // Si es 0 meses (opciones específicas), usar 6 meses por defecto
+      endDate.setMonth(endDate.getMonth() + 6);
+    }
+    
+    setApproveFormData({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      status: "1", // ACTIVE por defecto
+    });
+    
     setIsApproveDialogOpen(true);
   };
 
@@ -147,12 +171,29 @@ export default function PurchaseRequestsManagement() {
   const handleApprove = async () => {
     if (!selectedRequest) return;
 
+    if (!approveFormData.startDate || !approveFormData.endDate) {
+      toast.error("Por favor, completa las fechas de inicio y fin");
+      return;
+    }
+
+    if (new Date(approveFormData.startDate) >= new Date(approveFormData.endDate)) {
+      toast.error("La fecha de fin debe ser posterior a la fecha de inicio");
+      return;
+    }
+
     try {
-      await adminService.approvePurchaseRequest(selectedRequest._id, notes || undefined);
+      await adminService.approvePurchaseRequest(
+        selectedRequest._id,
+        notes || undefined,
+        approveFormData.startDate,
+        approveFormData.endDate,
+        approveFormData.status
+      );
       toast.success("Solicitud aprobada exitosamente");
       setIsApproveDialogOpen(false);
       setSelectedRequest(null);
       setNotes("");
+      setApproveFormData({ startDate: "", endDate: "", status: "1" });
       fetchRequests();
     } catch (err: any) {
       toast.error(err.message || "Error al aprobar la solicitud");
@@ -419,11 +460,11 @@ export default function PurchaseRequestsManagement() {
 
       {/* Dialog de Aprobar */}
       <Dialog open={isApproveDialogOpen} onOpenChange={setIsApproveDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>Aprobar Solicitud</DialogTitle>
             <DialogDescription>
-              ¿Estás seguro de que deseas aprobar esta solicitud? Se creará una suscripción activa para el usuario.
+              Configura la suscripción que se creará al aprobar esta solicitud.
             </DialogDescription>
           </DialogHeader>
           {selectedRequest && (
@@ -431,8 +472,50 @@ export default function PurchaseRequestsManagement() {
               <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                 <p className="text-sm font-medium">Usuario: {selectedRequest.userName}</p>
                 <p className="text-sm">Módulo: {selectedRequest.moduleName}</p>
-                <p className="text-sm">Duración: {selectedRequest.months} {selectedRequest.months === 1 ? "mes" : "meses"}</p>
+                <p className="text-sm">Duración solicitada: {selectedRequest.months} {selectedRequest.months === 1 ? "mes" : "meses"}</p>
               </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="approve-start-date">Fecha de Inicio *</Label>
+                  <Input
+                    id="approve-start-date"
+                    type="date"
+                    value={approveFormData.startDate}
+                    onChange={(e) => setApproveFormData({ ...approveFormData, startDate: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="approve-end-date">Fecha de Fin *</Label>
+                  <Input
+                    id="approve-end-date"
+                    type="date"
+                    value={approveFormData.endDate}
+                    onChange={(e) => setApproveFormData({ ...approveFormData, endDate: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="approve-status">Estado de la Suscripción *</Label>
+                <Select
+                  value={approveFormData.status}
+                  onValueChange={(value) => setApproveFormData({ ...approveFormData, status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Pendiente</SelectItem>
+                    <SelectItem value="1">Activa</SelectItem>
+                    <SelectItem value="2">Cancelada</SelectItem>
+                    <SelectItem value="3">Expirada</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="approve-notes">Notas (opcional)</Label>
                 <Textarea

@@ -157,9 +157,18 @@ export const adminService = {
     return response;
   },
 
-  async approvePurchaseRequest(requestId: string, notes?: string): Promise<any> {
+  async approvePurchaseRequest(
+    requestId: string, 
+    notes?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string
+  ): Promise<any> {
     const response = await api.post<any>(`/admin/purchase-requests/${requestId}/approve`, {
       notes: notes || undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+      status: status || undefined,
     });
     return response;
   },
@@ -245,6 +254,28 @@ export const adminService = {
 
   async updateB2CDefaults(data: any): Promise<any> {
     const response = await api.patch<any>("/admin/b2c-defaults", data);
+    return response;
+  },
+
+  // ========== EMAIL TEMPLATES MANAGEMENT ==========
+
+  async getAllEmailTemplates(): Promise<any[]> {
+    const response = await api.get<any[]>("/admin/email-templates");
+    return response;
+  },
+
+  async getPurchaseRequestTemplate(): Promise<any> {
+    const response = await api.get<any>("/admin/email-templates/purchase-request");
+    return response;
+  },
+
+  async upsertEmailTemplate(data: any): Promise<any> {
+    const response = await api.post<any>("/admin/email-templates", data);
+    return response;
+  },
+
+  async updateEmailTemplate(type: string, data: any): Promise<any> {
+    const response = await api.patch<any>(`/admin/email-templates/${type}`, data);
     return response;
   },
 };

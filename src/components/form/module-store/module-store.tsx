@@ -6,7 +6,7 @@ import { Badge } from "../../shared/badge";
 import { ShoppingCart, CheckCircle2, XCircle, Clock, CreditCard } from "lucide-react";
 import { suscriptionService, AvailableModule } from "../../../services/suscription-service";
 import { toast } from "react-hot-toast";
-import { getUserInfo, getUserId } from "../../../utils/auth-utils";
+import { getUserInfo, getUserId } from "../../../services/auth-service";
 import LoadingSpinner from "../../shared/spinner/loading-spinner";
 import { modules } from "../../../constants/constants";
 import {

@@ -10,6 +10,18 @@ enum SubscriptionType {
   BTB = "1",
 }
 
+export interface VocationalOptions {
+  instructions?: boolean;
+  holland?: boolean;
+  chaside?: boolean;
+  results?: boolean;
+  resultsOptions?: {
+    aiAnalysis?: boolean;
+    employmentData?: boolean;
+    compareCosts?: boolean;
+  };
+}
+
 export interface Subscription {
   subscriptionStatus: SubscriptionStatus;
   subscriptionStartDate: string;
@@ -17,6 +29,7 @@ export interface Subscription {
   subscriptionType: SubscriptionType;
   remainingDays: number;
   moduleId: string;
+  vocationalOptions?: VocationalOptions;
 }
 
 export interface ChildSubscription {

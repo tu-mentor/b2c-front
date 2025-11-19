@@ -169,11 +169,35 @@ export default function B2CDefaultsManagement() {
       setError(null);
       setSuccess(null);
 
+      // Limpiar el objeto antes de enviarlo, removiendo campos de MongoDB
+      const cleanDefaults = {
+        defaultModules: (defaults.defaultModules || []).map(({ moduleId, durationMonths }) => ({
+          moduleId,
+          durationMonths,
+        })),
+        vocationalModuleOptions: defaults.vocationalModuleOptions
+          ? {
+              instructions: defaults.vocationalModuleOptions.instructions ?? true,
+              holland: defaults.vocationalModuleOptions.holland ?? true,
+              chaside: defaults.vocationalModuleOptions.chaside ?? true,
+              results: defaults.vocationalModuleOptions.results ?? true,
+              ...(defaults.vocationalModuleOptions.resultsOptions && {
+                resultsOptions: {
+                  aiAnalysis: defaults.vocationalModuleOptions.resultsOptions.aiAnalysis ?? true,
+                  employmentData: defaults.vocationalModuleOptions.resultsOptions.employmentData ?? true,
+                  compareCosts: defaults.vocationalModuleOptions.resultsOptions.compareCosts ?? true,
+                },
+              }),
+            }
+          : undefined,
+        isActive: defaults.isActive ?? true,
+      };
+
       if (defaults._id) {
-        await adminService.updateB2CDefaults(defaults);
+        await adminService.updateB2CDefaults(cleanDefaults);
         toast.success("Configuración actualizada exitosamente");
       } else {
-        await adminService.createB2CDefaults(defaults);
+        await adminService.createB2CDefaults(cleanDefaults);
         toast.success("Configuración creada exitosamente");
       }
 
