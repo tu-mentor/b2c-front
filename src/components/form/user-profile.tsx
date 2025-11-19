@@ -52,8 +52,9 @@ export default function UserProfile({ userData }: { userData: UserData }) {
 
   useEffect(() => {
     if (newPassword) {
+      const minLength = import.meta.env.DEV ? 3 : 8;
       let strength = 0;
-      if (newPassword.length >= 8) strength += 25;
+      if (newPassword.length >= minLength) strength += 25;
       if (/[a-z]/.test(newPassword)) strength += 25;
       if (/[A-Z]/.test(newPassword)) strength += 25;
       if (/[0-9]/.test(newPassword)) strength += 25;
@@ -218,8 +219,10 @@ export default function UserProfile({ userData }: { userData: UserData }) {
                       {...register("newPassword", {
                         required: "Este campo es requerido",
                         minLength: {
-                          value: 8,
-                          message: "La contraseña debe tener al menos 8 caracteres",
+                          value: import.meta.env.DEV ? 3 : 8,
+                          message: import.meta.env.DEV 
+                            ? "La contraseña debe tener al menos 3 caracteres (desarrollo)" 
+                            : "La contraseña debe tener al menos 8 caracteres",
                         },
                       })}
                       className={`pr-10 ${errors.newPassword ? "border-red-500 focus:border-red-500" : "border-gray-300 focus:border-green-500"}`}
@@ -309,7 +312,7 @@ export default function UserProfile({ userData }: { userData: UserData }) {
                 <Alert className="border-2 border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20">
                   <Key className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   <AlertDescription className="text-blue-800 dark:text-blue-200">
-                    <strong>Consejos de seguridad:</strong> Usa una contraseña de al menos 8 caracteres que incluya mayúsculas, minúsculas, números y símbolos para mayor seguridad.
+                    <strong>Consejos de seguridad:</strong> Usa una contraseña de al menos {import.meta.env.DEV ? '3' : '8'} caracteres que incluya mayúsculas, minúsculas, números y símbolos para mayor seguridad.
                   </AlertDescription>
                 </Alert>
               </form>

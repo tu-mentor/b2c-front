@@ -171,6 +171,8 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
           setApiError({ field: "whatsapp", message: errorMessage });
         } else if (errorMessage.includes("Email")) {
           setApiError({ field: "email", message: errorMessage });
+        } else if (errorMessage.includes("contraseña") || errorMessage.includes("password") || errorMessage.includes("caracteres")) {
+          setApiError({ field: "password", message: errorMessage });
         }
         setAlertInfo({
           message: errorMessage,
@@ -434,12 +436,14 @@ export default function RegisterForm({ onFlip }: RegisterFormProps): React.React
                     <Input
                       id="password"
                       type="password"
-                      placeholder="Mínimo 8 caracteres"
+                      placeholder={import.meta.env.DEV ? "Mínimo 3 caracteres (desarrollo)" : "Mínimo 8 caracteres"}
                       {...register("password", {
                         required: "La contraseña es requerida",
                         minLength: {
-                          value: 8,
-                          message: "La contraseña debe tener al menos 8 caracteres",
+                          value: import.meta.env.DEV ? 3 : 8,
+                          message: import.meta.env.DEV 
+                            ? "La contraseña debe tener al menos 3 caracteres (desarrollo)" 
+                            : "La contraseña debe tener al menos 8 caracteres",
                         },
                       })}
                       className={`bg-white/80 dark:bg-gray-800/80 border-2 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl transition-all duration-300 focus:ring-2 focus:ring-blue-500/20 ${

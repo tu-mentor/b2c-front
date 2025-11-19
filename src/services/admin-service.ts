@@ -89,13 +89,6 @@ export const adminService = {
     return response;
   },
 
-  // ========== COMPANY MANAGEMENT ==========
-
-  async updateCompany(id: string, data: any): Promise<any> {
-    const response = await api.put(`/admin/company/${id}`, data);
-    return response;
-  },
-
   // ========== ADMIN CHECK ==========
 
   async hasAdmin(): Promise<boolean> {
@@ -175,6 +168,83 @@ export const adminService = {
     const response = await api.post<any>(`/admin/purchase-requests/${requestId}/reject`, {
       notes: notes || undefined,
     });
+    return response;
+  },
+
+  // ========== COMPANY MANAGEMENT ==========
+
+  async getCompanies(): Promise<any[]> {
+    const response = await api.get<any[]>("/admin/companies");
+    return response;
+  },
+
+  async getCompanyById(id: string): Promise<any> {
+    const response = await api.get<any>(`/admin/companies/${id}`);
+    return response;
+  },
+
+  async createCompany(data: { name: string; description?: string; characteristics?: string[] }): Promise<any> {
+    const response = await api.post<any>("/admin/companies", data);
+    return response;
+  },
+
+  async updateCompany(id: string, data: any): Promise<any> {
+    const response = await api.put(`/admin/company/${id}`, data);
+    return response;
+  },
+
+  // ========== COMPANY CHARACTERISTICS MANAGEMENT ==========
+
+  async getCompanyCharacteristics(): Promise<any[]> {
+    const response = await api.get<any[]>("/admin/company-characteristics");
+    return response;
+  },
+
+  async createCompanyCharacteristic(data: { name: string; value?: string }): Promise<any> {
+    const response = await api.post<any>("/admin/company-characteristics", data);
+    return response;
+  },
+
+  async updateCompanyCharacteristic(id: string, data: { name: string; value?: string }): Promise<any> {
+    const response = await api.put<any>(`/admin/company-characteristics/${id}`, data);
+    return response;
+  },
+
+  async deleteCompanyCharacteristic(id: string): Promise<void> {
+    await api.delete(`/admin/company-characteristics/${id}`);
+  },
+
+  // ========== MODULE MANAGEMENT ==========
+
+  async createModule(data: { name: string; identifier: number; description?: string }): Promise<any> {
+    const response = await api.post<any>("/admin/modules", data);
+    return response;
+  },
+
+  async updateModule(id: string, data: { name?: string; identifier?: number; description?: string }): Promise<any> {
+    const response = await api.put<any>(`/admin/modules/${id}`, data);
+    return response;
+  },
+
+  // ========== B2C DEFAULTS MANAGEMENT ==========
+
+  async getB2CDefaults(): Promise<any> {
+    const response = await api.get<any>("/admin/b2c-defaults");
+    return response;
+  },
+
+  async getAllB2CDefaults(): Promise<any[]> {
+    const response = await api.get<any[]>("/admin/b2c-defaults/all");
+    return response;
+  },
+
+  async createB2CDefaults(data: any): Promise<any> {
+    const response = await api.post<any>("/admin/b2c-defaults", data);
+    return response;
+  },
+
+  async updateB2CDefaults(data: any): Promise<any> {
+    const response = await api.patch<any>("/admin/b2c-defaults", data);
     return response;
   },
 };

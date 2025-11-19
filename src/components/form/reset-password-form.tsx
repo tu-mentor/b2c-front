@@ -94,12 +94,14 @@ export default function ResetPasswordForm() {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Ingrese su nueva contraseña"
+                      placeholder={import.meta.env.DEV ? "Mínimo 3 caracteres (desarrollo)" : "Mínimo 8 caracteres"}
                       {...register("password", {
                         required: "La contraseña es requerida",
                         minLength: {
-                          value: 8,
-                          message: "La contraseña debe tener al menos 8 caracteres",
+                          value: import.meta.env.DEV ? 3 : 8,
+                          message: import.meta.env.DEV 
+                            ? "La contraseña debe tener al menos 3 caracteres (desarrollo)" 
+                            : "La contraseña debe tener al menos 8 caracteres",
                         },
                       })}
                       className={errors.password ? "border-red-500" : ""}

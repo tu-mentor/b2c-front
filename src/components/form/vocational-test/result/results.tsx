@@ -938,6 +938,28 @@ export default memo(function Results({
             <p className="text-muted-foreground text-sm">Análisis completo de orientación vocacional</p>
           </div>
 
+          {/* Disclaimer */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+              <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <AlertTitle className="text-blue-900 dark:text-blue-100 font-semibold">
+                Información importante
+              </AlertTitle>
+              <AlertDescription className="text-blue-800 dark:text-blue-200 text-sm mt-2 space-y-2">
+                <p>
+                  <strong>Análisis con IA:</strong> Para realizar el análisis con inteligencia artificial, primero debes completar las pruebas de <strong>Holland</strong> y <strong>CHASIDE</strong>.
+                </p>
+                <p>
+                  <strong>Datos de empleo y costos:</strong> Para poder ver los datos de empleo y comparar costos de carrera, primero debes haber completado el análisis con IA.
+                </p>
+              </AlertDescription>
+            </Alert>
+          </motion.div>
+
           {/* Tarjetas de Estado de Pruebas - Compactas */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Prueba Holland */}

@@ -308,24 +308,26 @@ export default function SubscriptionManagement() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-6 space-y-6"
+      className="p-4 md:p-6 space-y-4 md:space-y-6"
     >
-      <h1 className="text-3xl font-bold text-gray-800">Gestión de Suscripciones</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Gestión de Suscripciones</h1>
 
       <Card className="shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Lista de Suscripciones</CardTitle>
-          <div className="flex space-x-2">
-            <Button onClick={handleCreateClick} className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="mr-2 h-4 w-4" /> Crear Suscripción
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl">Lista de Suscripciones</CardTitle>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button onClick={handleCreateClick} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4" /> 
+              <span className="hidden sm:inline">Crear Suscripción</span>
+              <span className="sm:hidden">Crear</span>
             </Button>
-            <Button onClick={fetchSubscriptions} variant="outline">
+            <Button onClick={fetchSubscriptions} variant="outline" className="w-full sm:w-auto">
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2 mb-4 flex-wrap gap-2">
+        <CardContent className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
             <Input
               placeholder="Buscar por correo electrónico..."
               value={emailSearchTerm}
@@ -335,9 +337,9 @@ export default function SubscriptionManagement() {
                   handleEmailSearch();
                 }
               }}
-              className="max-w-sm"
+              className="w-full sm:max-w-sm"
             />
-            <Button onClick={handleEmailSearch}>
+            <Button onClick={handleEmailSearch} className="w-full sm:w-auto">
               <Search className="mr-2 h-4 w-4" /> Buscar
             </Button>
             {params.search && (
@@ -391,17 +393,18 @@ export default function SubscriptionManagement() {
             </Alert>
           ) : (
             <>
-              <Table>
+              <div className="overflow-x-auto">
+                <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Módulo</TableHead>
-                    <TableHead>Fecha Inicio</TableHead>
-                    <TableHead>Fecha Fin</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="whitespace-nowrap">ID</TableHead>
+                    <TableHead className="whitespace-nowrap">Usuario</TableHead>
+                    <TableHead className="whitespace-nowrap">Tipo</TableHead>
+                    <TableHead className="whitespace-nowrap">Estado</TableHead>
+                    <TableHead className="whitespace-nowrap">Módulo</TableHead>
+                    <TableHead className="whitespace-nowrap">Fecha Inicio</TableHead>
+                    <TableHead className="whitespace-nowrap">Fecha Fin</TableHead>
+                    <TableHead className="text-right whitespace-nowrap">Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -445,7 +448,8 @@ export default function SubscriptionManagement() {
                   ))}
                 </TableBody>
               </Table>
-              <div className="flex items-center justify-between mt-4">
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
                 <Button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
@@ -453,7 +457,7 @@ export default function SubscriptionManagement() {
                 >
                   <ChevronLeft className="h-4 w-4 mr-2" /> Anterior
                 </Button>
-                <span className="text-sm text-gray-700">
+                <span className="text-xs sm:text-sm text-gray-700 text-center">
                   Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
                 </span>
                 <Button

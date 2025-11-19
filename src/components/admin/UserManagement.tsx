@@ -271,23 +271,23 @@ export default function UserManagement() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex justify-between items-center"
+        className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4"
       >
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Gestión de Usuarios
           </h1>
-          <p className="text-gray-600 text-lg">Administra los usuarios de la plataforma</p>
+          <p className="text-sm md:text-base lg:text-lg text-gray-600">Administra los usuarios de la plataforma</p>
         </div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
           <Button 
             onClick={handleCreate} 
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg"
           >
             <Plus className="h-4 w-4" />
             Crear Usuario
@@ -296,24 +296,24 @@ export default function UserManagement() {
       </motion.div>
 
       <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-semibold text-gray-800">Lista de Usuarios</CardTitle>
+        <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <CardTitle className="text-lg md:text-xl font-semibold text-gray-800">Lista de Usuarios</CardTitle>
             <motion.div whileHover={{ rotate: 180 }} transition={{ duration: 0.5 }}>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={fetchUsers}
-                className="flex items-center gap-2 hover:bg-indigo-50"
+                className="flex items-center gap-2 hover:bg-indigo-50 w-full sm:w-auto"
               >
                 <RefreshCw className="h-4 w-4" />
-                Actualizar
+                <span className="hidden sm:inline">Actualizar</span>
               </Button>
             </motion.div>
           </div>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="flex gap-4 mb-6">
+        <CardContent className="pt-4 md:pt-6 p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
@@ -321,12 +321,12 @@ export default function UserManagement() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                className="pl-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                className="pl-10 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 w-full"
               />
             </div>
             <Button 
               onClick={handleSearch}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 w-full sm:w-auto"
             >
               Buscar
             </Button>
@@ -346,15 +346,16 @@ export default function UserManagement() {
           ) : (
             <>
               <div className="rounded-lg border border-gray-200 overflow-hidden shadow-sm">
-                <Table>
+                <div className="overflow-x-auto">
+                  <Table>
                   <TableHeader className="bg-gradient-to-r from-gray-50 to-indigo-50/30">
                     <TableRow className="hover:bg-transparent">
-                      <TableHead className="font-semibold text-gray-700">Nombre</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Email</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Rol</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Estado</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Verificado</TableHead>
-                      <TableHead className="font-semibold text-gray-700">Acciones</TableHead>
+                      <TableHead className="font-semibold text-gray-700 whitespace-nowrap">Nombre</TableHead>
+                      <TableHead className="font-semibold text-gray-700 whitespace-nowrap">Email</TableHead>
+                      <TableHead className="font-semibold text-gray-700 whitespace-nowrap">Rol</TableHead>
+                      <TableHead className="font-semibold text-gray-700 whitespace-nowrap">Estado</TableHead>
+                      <TableHead className="font-semibold text-gray-700 whitespace-nowrap">Verificado</TableHead>
+                      <TableHead className="font-semibold text-gray-700 whitespace-nowrap">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -376,17 +377,17 @@ export default function UserManagement() {
                           transition={{ delay: index * 0.05 }}
                           className="hover:bg-indigo-50/50 transition-colors"
                         >
-                          <TableCell className="font-medium text-gray-800">
+                          <TableCell className="font-medium text-gray-800 whitespace-nowrap">
                             {user.firstName} {user.lastName}
                           </TableCell>
-                          <TableCell className="text-gray-600">{user.email}</TableCell>
-                          <TableCell>
+                          <TableCell className="text-gray-600 whitespace-nowrap max-w-[200px] truncate">{user.email}</TableCell>
+                          <TableCell className="whitespace-nowrap">
                             <Badge className={`${getRoleBadgeColor(user.role)} font-medium px-2 py-1`}>
                               {user.role}
                             </Badge>
                           </TableCell>
-                          <TableCell>{getStatusBadge(user.status)}</TableCell>
-                          <TableCell>
+                          <TableCell className="whitespace-nowrap">{getStatusBadge(user.status)}</TableCell>
+                          <TableCell className="whitespace-nowrap">
                             {user.emailVerified ? (
                               <Badge className="bg-green-100 text-green-800 font-medium px-2 py-1">
                                 ✓ Sí
@@ -397,8 +398,8 @@ export default function UserManagement() {
                               </Badge>
                             )}
                           </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
+                          <TableCell className="whitespace-nowrap">
+                            <div className="flex items-center gap-1 md:gap-2">
                               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                                 <Button
                                   variant="outline"
@@ -439,10 +440,11 @@ export default function UserManagement() {
                     )}
                   </TableBody>
                 </Table>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between mt-4">
-                <div className="text-sm text-gray-600">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
+                <div className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
                   Mostrando {users.length} de {pagination.total} usuarios
                 </div>
                 <div className="flex gap-2">

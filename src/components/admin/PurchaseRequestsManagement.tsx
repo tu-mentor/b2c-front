@@ -217,26 +217,26 @@ export default function PurchaseRequestsManagement() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-6 space-y-6"
+      className="p-4 md:p-6 space-y-4 md:space-y-6"
     >
-      <h1 className="text-3xl font-bold text-gray-800">Solicitudes de Compra/Renovación</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Solicitudes de Compra/Renovación</h1>
 
       <Card className="shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Lista de Solicitudes</CardTitle>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 md:p-6">
+          <CardTitle className="text-lg md:text-xl">Lista de Solicitudes</CardTitle>
           <div className="flex space-x-2">
-            <Button onClick={fetchRequests} variant="outline">
+            <Button onClick={fetchRequests} variant="outline" className="w-full sm:w-auto">
               <RefreshCw className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-2 mb-4 flex-wrap gap-2">
+        <CardContent className="p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
             <Select
               value={params.status}
               onValueChange={(value) => setParams({ ...params, page: 1, status: value })}
             >
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filtrar por estado" />
               </SelectTrigger>
               <SelectContent>
@@ -264,36 +264,37 @@ export default function PurchaseRequestsManagement() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Empresa</TableHead>
-                    <TableHead>Módulo</TableHead>
-                    <TableHead>Tipo</TableHead>
-                    <TableHead>Duración</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Fecha</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="whitespace-nowrap">Usuario</TableHead>
+                      <TableHead className="whitespace-nowrap">Empresa</TableHead>
+                      <TableHead className="whitespace-nowrap">Módulo</TableHead>
+                      <TableHead className="whitespace-nowrap">Tipo</TableHead>
+                      <TableHead className="whitespace-nowrap">Duración</TableHead>
+                      <TableHead className="whitespace-nowrap">Estado</TableHead>
+                      <TableHead className="whitespace-nowrap">Fecha</TableHead>
+                      <TableHead className="text-right whitespace-nowrap">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {requests.map((request) => (
                     <TableRow key={request._id}>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">
                         <div>
                           <div className="font-medium">{request.userName}</div>
-                          <div className="text-sm text-gray-500">{request.userEmail}</div>
+                          <div className="text-sm text-gray-500 truncate max-w-[150px]">{request.userEmail}</div>
                         </div>
                       </TableCell>
-                      <TableCell>{request.companyName || "N/A"}</TableCell>
-                      <TableCell>{request.moduleName || "N/A"}</TableCell>
-                      <TableCell>{getTypeBadge(request.type)}</TableCell>
-                      <TableCell>{request.months} {request.months === 1 ? "mes" : "meses"}</TableCell>
-                      <TableCell>{getStatusBadge(request.status)}</TableCell>
-                      <TableCell>{formatDate(request.createdAt)}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end space-x-2">
+                      <TableCell className="whitespace-nowrap">{request.companyName || "N/A"}</TableCell>
+                      <TableCell className="whitespace-nowrap">{request.moduleName || "N/A"}</TableCell>
+                      <TableCell className="whitespace-nowrap">{getTypeBadge(request.type)}</TableCell>
+                      <TableCell className="whitespace-nowrap">{request.months} {request.months === 1 ? "mes" : "meses"}</TableCell>
+                      <TableCell className="whitespace-nowrap">{getStatusBadge(request.status)}</TableCell>
+                      <TableCell className="whitespace-nowrap">{formatDate(request.createdAt)}</TableCell>
+                      <TableCell className="text-right whitespace-nowrap">
+                        <div className="flex justify-end gap-1 md:gap-2">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -325,9 +326,10 @@ export default function PurchaseRequestsManagement() {
                       </TableCell>
                     </TableRow>
                   ))}
-                </TableBody>
-              </Table>
-              <div className="flex items-center justify-between mt-4">
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4">
                 <Button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page === 1}
@@ -335,7 +337,7 @@ export default function PurchaseRequestsManagement() {
                 >
                   <ChevronLeft className="h-4 w-4 mr-2" /> Anterior
                 </Button>
-                <span className="text-sm text-gray-700">
+                <span className="text-xs sm:text-sm text-gray-700 text-center">
                   Página {pagination.page} de {pagination.totalPages} ({pagination.total} total)
                 </span>
                 <Button
